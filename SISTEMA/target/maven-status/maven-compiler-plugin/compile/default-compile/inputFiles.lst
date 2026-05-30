@@ -1,6 +1,0 @@
-/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/LojaRoupasApplication.java
-/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/controller/HomeController.java
-/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/dao/ILojaDAO.java
-/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/dao/IRoupasDAO.java
-/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/domain/Loja.java
-/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/domain/Roupas.java
