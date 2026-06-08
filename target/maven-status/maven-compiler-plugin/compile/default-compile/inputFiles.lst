@@ -1,0 +1,10 @@
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/LojaRoupasApplication.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/controller/HomeController.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/dao/IClienteDAO.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/dao/IPedidoDAO.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/dao/IRoupaDAO.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/dao/IVendedorDAO.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/domain/Cliente.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/domain/Pedido.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/domain/Roupa.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/domain/Vendedor.java
