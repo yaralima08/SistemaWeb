@@ -1,0 +1,58 @@
+<form th:object="${roupa}"
+      th:action="${modo == 'edicao'} ?
+                 @{/roupas/editar/{id}(id=${roupa.id})} :
+                 @{/roupas/cadastrar}"
+      method="post">
+
+    <input type="hidden" th:field="*{id}" />
+
+    <div class="mb-3">
+        <label class="form-label">Nome</label>
+        <input type="text" class="form-control" th:field="*{nome}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Categoria</label>
+        <input type="text" class="form-control" th:field="*{categoria}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Tamanho</label>
+        <input type="text" class="form-control" th:field="*{tamanho}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Cor</label>
+        <input type="text" class="form-control" th:field="*{cor}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Preço</label>
+        <input type="number" step="0.01" class="form-control" th:field="*{preco}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Estoque</label>
+        <input type="number" class="form-control" th:field="*{estoque}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Vendedor</label>
+
+        <select class="form-select" name="vendedor">
+
+            <option value="">Selecione...</option>
+
+            <option th:each="v : ${vendedores}"
+                    th:value="${v.id}"
+                    th:text="${v.nomeLoja}">
+            </option>
+
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        Salvar
+    </button>
+
+</form>

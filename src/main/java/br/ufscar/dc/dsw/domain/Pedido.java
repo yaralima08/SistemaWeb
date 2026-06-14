@@ -1,6 +1,8 @@
 package br.ufscar.dc.dsw.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "Pedido")
@@ -10,14 +12,18 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Positive
     private Integer quantidade;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
+    @NotNull
     private Cliente cliente;
 
     @ManyToOne
     @JoinColumn(name = "roupa_id")
+    @NotNull
     private Roupa roupa;
 
     public Pedido() {
@@ -45,7 +51,15 @@ public class Pedido {
         return cliente;
     }
 
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
     public Roupa getRoupa() {
         return roupa;
+    }
+
+    public void setRoupa(Roupa roupa) {
+        this.roupa = roupa;
     }
 }

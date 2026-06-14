@@ -8,3 +8,11 @@
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/domain/Pedido.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/domain/Roupa.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/domain/Vendedor.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/ClienteService.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/PedidoService.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/RoupaService.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/VendedorService.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/validation/CNPJ.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/validation/CNPJValidatior.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/validation/CPF.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/validation/CPFValidator.java
