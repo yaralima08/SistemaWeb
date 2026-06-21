@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{vendedor.title}">Vendedor</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <h1 th:text="#{app.title}">Sistema de Compra e Venda de Roupas</h1>
+        <div>
+            <a th:href="@{/admin/dashboard}">Dashboard</a>
+            <a th:href="@{/logout}">Sair</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <div class="container">
+        <h2 th:text="#{vendedor.create}">Cadastrar Vendedor</h2>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <form th:action="@{/admin/vendedores/salvar}" th:object="${vendedor}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="form-group">
+                <label th:text="#{vendedor.store}">Nome da Loja</label>
+                <input type="text" th:field="*{nome}" required>
+                <div class="error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{vendedor.cnpj}">CNPJ</label>
+                <input type="text" th:field="*{cnpj}" required>
+                <div class="error" th:if="${#fields.hasErrors('cnpj')}" th:errors="*{cnpj}"></div>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{vendedor.description}">Descrição</label>
+                <textarea th:field="*{descricao}"></textarea>
+            </div>
+
+            <fieldset>
+                <legend th:text="#{vendedor.address}">Endereço</legend>
+
+                <div class="form-group">
+                    <label>Logradouro</label>
+                    <input type="text" th:field="*{endereco.logradouro}">
+                </div>
+                <div class="form-group">
+                    <label>Número</label>
+                    <input type="text" th:field="*{endereco.numero}">
+                </div>
+                <div class="form-group">
+                    <label>Bairro</label>
+                    <input type="text" th:field="*{endereco.bairro}">
+                </div>
+                <div class="form-group">
+                    <label>Cidade</label>
+                    <input type="text" th:field="*{endereco.cidade}">
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <input type="text" th:field="*{endereco.estado}">
+                </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary">Salvar</button>
+        </form>
+
+        <hr>
+
+        <form th:action="@{/admin/vendedores/salvar}" th:object="${vendedor}" method="post" style="display:none"></form>
+    </div>
+</main>
+</body>
+</html>
+

@@ -1,11 +1,165 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Sistema de Roupas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{app.title}">StyleStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span class="logo-icon">👗</span>
+                <span>StyleStore</span>
+            </a>
+            
+            <nav class="nav-menu">
+                <a href="/" class="active"><i class="fas fa-home"></i> <span th:text="#{menu.home}">Início</span></a>
+                <a href="/produtos"><i class="fas fa-tshirt"></i> <span th:text="#{menu.products}">Produtos</span></a>
+                
+                <!-- BOTÕES DE IDIOMA -->
+                <div style="display:flex;gap:0.3rem;align-items:center;margin-left:0.5rem;">
+                    <a href="?lang=pt_BR" title="Português" style="padding:0.3rem 0.5rem;font-size:1.2rem;text-decoration:none;background:rgba(255,255,255,0.15);border-radius:4px;">
+                        🇧🇷
+                    </a>
+                    <a href="?lang=en" title="English" style="padding:0.3rem 0.5rem;font-size:1.2rem;text-decoration:none;background:rgba(255,255,255,0.15);border-radius:4px;">
+                        🇺🇸
+                    </a>
+                </div>
+                
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="btn btn-primary" style="padding:0.5rem 1.5rem;">
+                        <i class="fas fa-sign-in-alt"></i> <span th:text="#{app.login}">Entrar</span>
+                    </a>
+                    <a href="/register/cliente" class="btn btn-secondary" style="padding:0.5rem 1.5rem;background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3);">
+                        <i class="fas fa-user-plus"></i> <span th:text="#{app.register}">Cadastrar</span>
+                    </a>
+                </div>
+                
+                <div sec:authorize="isAuthenticated()">
+                    <div class="user-menu">
+                        <div class="user-avatar">
+                            <span th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">U</span>
+                        </div>
+                        <span style="color:white;font-size:0.9rem;" sec:authentication="name">user</span>
+                        <form th:action="@{/logout}" method="post" style="display:inline;margin:0;">
+                            <button type="submit" style="background:rgba(255,255,255,0.2);color:white;border:none;border-radius:50px;padding:0.3rem 0.8rem;font-size:0.8rem;cursor:pointer;display:flex;align-items:center;gap:0.3rem;">
+                                <i class="fas fa-sign-out-alt"></i> <span th:text="#{app.logout}">Sair</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
 
-<h1>Sistema Web de Compra e Venda de Roupas</h1>
+    <!-- HERO -->
+    <section class="hero">
+        <h1>👗 <span>StyleStore</span> - <span th:text="#{app.welcome}">Bem-vindo</span></h1>
+        <p th:text="#{app.welcome}">Encontre as melhores roupas com os melhores preços.</p>
+        <div class="hero-buttons">
+            <a href="/produtos" class="btn btn-primary btn-lg">
+                <i class="fas fa-shopping-bag"></i> <span th:text="#{menu.products}">Produtos</span>
+            </a>
+        </div>
+    </section>
 
+    <!-- FEATURES -->
+    <section class="features">
+        <div class="feature-card">
+            <div class="feature-icon">🛍️</div>
+            <h3><span th:text="#{menu.products}">Produtos</span></h3>
+            <p>Encontre roupas de todos os estilos e tamanhos.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📦</div>
+            <h3>Venda Suas Roupas</h3>
+            <p>Anuncie suas roupas e alcance mais clientes.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🚚</div>
+            <h3><span th:text="#{menu.orders}">Pedidos</span></h3>
+            <p>Gerencie todos os seus pedidos em um só lugar.</p>
+        </div>
+    </section>
+
+    <!-- PRODUTOS -->
+    <section class="products-section">
+        <div class="section-header">
+            <h2><i class="fas fa-star" style="color:#FFD700;"></i> <span th:text="#{menu.products}">Produtos</span></h2>
+            <a href="/produtos" class="btn btn-outline"><span th:text="#{menu.products}">Ver Todos</span> <i class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <div th:if="${produtos != null && !produtos.isEmpty()}">
+            <div class="products-grid">
+                <div th:each="produto : ${produtos}" class="product-card">
+                    <div class="product-image">
+                        <img th:if="${produto.imagens != null && !produto.imagens.isEmpty()}" 
+                             th:src="${produto.imagens[0]}" 
+                             th:alt="${produto.nome}">
+                        <img th:unless="${produto.imagens != null && !produto.imagens.isEmpty()}" 
+                             src="/images/placeholder.jpg" 
+                             th:alt="${produto.nome}">
+                        <span class="product-badge badge-new" th:if="${produto.quantidadeEstoque > 10}" th:text="#{produto.new}">Novo</span>
+                        <span class="product-badge badge-sale" th:if="${produto.quantidadeEstoque <= 10 && produto.quantidadeEstoque > 0}" th:text="#{produto.last.units}">Últimas unidades</span>
+                        <span class="product-badge" style="background:#FF6B6B;color:white;" th:if="${produto.quantidadeEstoque == 0}" th:text="#{produto.soldout}">Esgotado</span>
+                    </div>
+                    <div class="product-info">
+                        <h3 th:text="${produto.nome}">Nome</h3>
+                        <div class="product-category">
+                            <i class="fas fa-tag"></i> <span th:text="${produto.categoria}">Categoria</span>
+                            · <i class="fas fa-ruler"></i> <span th:text="${produto.tamanho}">M</span>
+                        </div>
+                        <div class="product-price" th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 0, 2, 'COMMA')}">
+                            R$ 0,00
+                        </div>
+                        <div class="product-meta">
+                            <span><i class="fas fa-box"></i> <span th:text="${produto.quantidadeEstoque}">10</span> <span th:text="#{produto.stock}">unid.</span></span>
+                        </div>
+                        <div class="product-actions">
+                            <a th:href="@{'/produtos/detalhe/' + ${produto.id}}" class="btn btn-outline btn-sm">
+                                <i class="fas fa-eye"></i> <span th:text="#{produto.details}">Detalhes</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${produtos == null || produtos.isEmpty()}" style="text-align:center;padding:4rem 0;">
+            <i class="fas fa-box-open" style="font-size:4rem;color:#DFE6E9;"></i>
+            <h3 style="margin-top:1rem;color:#636E72;" th:text="#{produtos.empty}">Nenhum produto encontrado</h3>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h4>👗 StyleStore</h4>
+                <p>UFScar - Departamento de Computação</p>
+                <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);">Yara Vieira de Lima - RA: 824341</p>
+            </div>
+            <div>
+                <h4><span th:text="#{menu.products}">Produtos</span></h4>
+                <a href="/produtos"><span th:text="#{menu.products}">Produtos</span></a>
+                <a href="/register/vendedor"><span th:text="#{vendedor.register}">Vender</span></a>
+            </div>
+            <div>
+                <h4>Idioma</h4>
+                <a href="?lang=pt_BR">🇧🇷 Português</a>
+                <a href="?lang=en">🇺🇸 English</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 StyleStore - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

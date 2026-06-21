@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - StyleStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#6C63FF 0%,#8B7FFF 100%);padding:2rem;">
+        <div style="background:white;border-radius:20px;padding:3rem;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <div style="text-align:center;margin-bottom:2rem;">
+                <span style="font-size:3rem;display:block;">👗</span>
+                <h1 style="font-size:1.8rem;color:#2D3436;margin-top:0.5rem;">StyleStore</h1>
+                <p style="color:#636E72;">Faça login para continuar</p>
+            </div>
+
+            <!-- Mensagens -->
+            <div th:if="${param.error}" style="background:#FDD8D8;color:#9B2C2C;padding:0.8rem 1rem;border-radius:12px;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.8rem;border-left:4px solid #FF4757;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Email ou senha inválidos. Tente novamente.</span>
+            </div>
+
+            <div th:if="${param.logout}" style="background:#D4F5E9;color:#006644;padding:0.8rem 1rem;border-radius:12px;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.8rem;border-left:4px solid #00C9A7;">
+                <i class="fas fa-check-circle"></i>
+                <span>Você saiu com sucesso.</span>
+            </div>
+
+            <div th:if="${success}" th:text="${success}" style="background:#D4F5E9;color:#006644;padding:0.8rem 1rem;border-radius:12px;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.8rem;border-left:4px solid #00C9A7;">
+                <i class="fas fa-check-circle"></i>
+                <span>Cadastro realizado com sucesso!</span>
+            </div>
+
+            <div th:if="${error}" th:text="${error}" style="background:#FDD8D8;color:#9B2C2C;padding:0.8rem 1rem;border-radius:12px;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.8rem;border-left:4px solid #FF4757;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Erro ao cadastrar.</span>
+            </div>
+
+            <!-- Formulário -->
+            <form th:action="@{/login}" method="post">
+                <div style="margin-bottom:1.5rem;">
+                    <label for="username" style="display:block;font-weight:600;margin-bottom:0.3rem;color:#2D3436;">E-mail</label>
+                    <input type="email" id="username" name="username" 
+                           style="width:100%;padding:0.8rem 1rem;border:2px solid #DFE6E9;border-radius:12px;font-size:1rem;background:#F8F9FA;"
+                           placeholder="seu@email.com" required>
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <label for="password" style="display:block;font-weight:600;margin-bottom:0.3rem;color:#2D3436;">Senha</label>
+                    <input type="password" id="password" name="password" 
+                           style="width:100%;padding:0.8rem 1rem;border:2px solid #DFE6E9;border-radius:12px;font-size:1rem;background:#F8F9FA;"
+                           placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" style="width:100%;padding:0.8rem;background:#6C63FF;color:white;border:none;border-radius:12px;font-size:1.1rem;font-weight:600;cursor:pointer;box-shadow:0 4px 15px rgba(108,99,255,0.4);">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+            </form>
+
+            <div style="text-align:center;margin-top:1.5rem;color:#636E72;">
+                <p>Não tem uma conta? 
+                    <a href="/register/cliente" style="color:#6C63FF;font-weight:600;text-decoration:none;">Cadastre-se</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

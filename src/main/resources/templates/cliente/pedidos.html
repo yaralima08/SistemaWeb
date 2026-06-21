@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{pedido.title}">Pedidos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <h1 th:text="#{app.title}">Sistema de Compra e Venda de Roupas</h1>
+        <div>
+            <a th:href="@{/cliente/dashboard}" sec:authorize="hasRole('CLIENTE')" th:text="#{menu.profile}">Perfil</a>
+            <a th:href="@{/logout}" th:text="#{app.logout}">Sair</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <div class="container">
+        <h2 th:text="#{pedido.title}">Pedidos</h2>
+
+        <div th:if="${pedidos == null || #lists.isEmpty(pedidos)}" class="alert alert-info">
+            <span th:text="#{pedido.empty}">Você ainda não realizou compras.</span>
+        </div>
+
+        <div th:if="${pedidos != null && !#lists.isEmpty(pedidos)}">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th th:text="#{pedido.date}">Data</th>
+                    <th th:text="#{pedido.status}">Status</th>
+<th th:text="#{pedido.total}">Total</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pedido : ${pedidos}">
+                    <td th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}">22/06/2026 10:00</td>
+                    <td>
+                        <span th:switch="${pedido.status}">
+                            <span th:case="'PENDENTE'" th:text="#{status.pendente}">Pendente</span>
+                            <span th:case="'PAGO'" th:text="#{status.pago}">Pago</span>
+                            <span th:case="'ENVIADO'" th:text="#{status.enviado}">Enviado</span>
+                            <span th:case="'ENTREGUE'" th:text="#{status.entregue}">Entregue</span>
+                            <span th:case="'CANCELADO'" th:text="#{status.cancelado}">Cancelado</span>
+                            <span th:case="*" th:text="${pedido.status}">Status</span>
+                        </span>
+                    </td>
+                    <td th:text="${pedido.total}">0,00</td>
+                    <td>
+                        <a th:href="@{'/pedido/confirmacao/' + ${pedido.id}}" class="btn">
+                            Ver
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>
+

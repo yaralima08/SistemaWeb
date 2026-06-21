@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Produtos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <h1 th:text="#{app.title}">Sistema de Compra e Venda de Roupas</h1>
+        <div>
+            <a th:href="@{/vendedor/dashboard}">Dashboard</a>
+            <a th:href="@{/logout}">Sair</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <div class="container">
+        <h2>Seus produtos</h2>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <a th:href="@{/vendedor/produtos/novo}" class="btn btn-primary" style="margin-bottom: 12px;">Novo produto</a>
+
+        <div th:if="${produtos == null or #lists.isEmpty(produtos)}" class="alert alert-info">
+            Nenhum produto cadastrado.
+        </div>
+
+        <div th:if="${produtos != null && !#lists.isEmpty(produtos)}">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço</th>
+                    <th>Estoque</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="produto : ${produtos}">
+                    <td th:text="${produto.nome}">Nome</td>
+                    <td th:text="${produto.preco}">0</td>
+                    <td th:text="${produto.quantidadeEstoque}">0</td>
+                    <td>
+                        <a th:href="@{'/vendedor/produtos/editar/' + ${produto.id}}" class="btn btn-sm">Editar</a>
+                        <form th:action="@{'/vendedor/produtos/deletar/' + ${produto.id}}" method="post" style="display:inline; margin-left:6px;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza?')">Excluir</button>
+                        </form>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>
+

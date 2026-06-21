@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos - StyleStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span class="logo-icon">👗</span>
+                <span>StyleStore</span>
+            </a>
+            <nav class="nav-menu">
+                <a href="/"><i class="fas fa-home"></i> Início</a>
+                <a href="/produtos" class="active"><i class="fas fa-tshirt"></i> Produtos</a>
+                
+                <div style="display:flex;gap:0.3rem;align-items:center;margin-left:0.5rem;">
+                    <a href="?lang=pt_BR" title="Português" style="padding:0.3rem 0.5rem;font-size:1.2rem;text-decoration:none;background:rgba(255,255,255,0.15);border-radius:4px;">
+                        🇧🇷
+                    </a>
+                    <a href="?lang=en" title="English" style="padding:0.3rem 0.5rem;font-size:1.2rem;text-decoration:none;background:rgba(255,255,255,0.15);border-radius:4px;">
+                        🇺🇸
+                    </a>
+                </div>
+                
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="btn btn-primary" style="padding:0.5rem 1.5rem;">
+                        <i class="fas fa-sign-in-alt"></i> Entrar
+                    </a>
+                </div>
+                <div sec:authorize="isAuthenticated()">
+                    <a href="/logout" class="btn btn-primary" style="padding:0.5rem 1.5rem;background:rgba(255,255,255,0.15);">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main style="max-width:1280px;margin:0 auto;padding:2rem;">
+        <div class="section-header">
+            <h2><i class="fas fa-tshirt" style="color:#6C63FF;"></i> Todos os Produtos</h2>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="filters-section">
+            <form th:action="@{/produtos}" method="get" class="filters-grid">
+                <div class="filter-group">
+                    <label><i class="fas fa-tag"></i> Categoria</label>
+                    <select name="categoria">
+                        <option value="">Todas</option>
+                        <option value="FEMININO" th:selected="${categoriaSelecionada == 'FEMININO'}">Feminino</option>
+                        <option value="MASCULINO" th:selected="${categoriaSelecionada == 'MASCULINO'}">Masculino</option>
+                        <option value="INFANTIL" th:selected="${categoriaSelecionada == 'INFANTIL'}">Infantil</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label><i class="fas fa-ruler"></i> Tamanho</label>
+                    <select name="tamanho">
+                        <option value="">Todos</option>
+                        <option value="PP" th:selected="${tamanhoSelecionado == 'PP'}">PP</option>
+                        <option value="P" th:selected="${tamanhoSelecionado == 'P'}">P</option>
+                        <option value="M" th:selected="${tamanhoSelecionado == 'M'}">M</option>
+                        <option value="G" th:selected="${tamanhoSelecionado == 'G'}">G</option>
+                        <option value="GG" th:selected="${tamanhoSelecionado == 'GG'}">GG</option>
+                        <option value="XG" th:selected="${tamanhoSelecionado == 'XG'}">XG</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label><i class="fas fa-palette"></i> Cor</label>
+                    <select name="cor">
+                        <option value="">Todas</option>
+                        <option value="BRANCO" th:selected="${corSelecionada == 'BRANCO'}">Branco</option>
+                        <option value="PRETO" th:selected="${corSelecionada == 'PRETO'}">Preto</option>
+                        <option value="AZUL" th:selected="${corSelecionada == 'AZUL'}">Azul</option>
+                        <option value="VERMELHO" th:selected="${corSelecionada == 'VERMELHO'}">Vermelho</option>
+                        <option value="VERDE" th:selected="${corSelecionada == 'VERDE'}">Verde</option>
+                        <option value="ROSA" th:selected="${corSelecionada == 'ROSA'}">Rosa</option>
+                        <option value="ROXO" th:selected="${corSelecionada == 'ROXO'}">Roxo</option>
+                        <option value="BEGE" th:selected="${corSelecionada == 'BEGE'}">Bege</option>
+                        <option value="CINZA" th:selected="${corSelecionada == 'CINZA'}">Cinza</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label><i class="fas fa-dollar-sign"></i> Preço Máx.</label>
+                    <input type="number" name="precoMax" placeholder="R$ 500" min="0" step="10">
+                </div>
+                
+                <div class="filter-group" style="display:flex;gap:0.5rem;align-items:end;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">
+                        <i class="fas fa-search"></i> Filtrar
+                    </button>
+                    <a href="/produtos" class="btn btn-outline" style="flex:0;">
+                        <i class="fas fa-undo"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- LISTA DE PRODUTOS -->
+        <div th:if="${produtos != null && !produtos.isEmpty()}">
+            <div class="products-grid">
+                <div th:each="produto : ${produtos}" class="product-card">
+                    <div class="product-image">
+                        <img th:if="${produto.imagens != null && !produto.imagens.isEmpty()}" 
+                             th:src="${produto.imagens[0]}" 
+                             th:alt="${produto.nome}">
+                        <img th:unless="${produto.imagens != null && !produto.imagens.isEmpty()}" 
+                             src="/images/placeholder.jpg" 
+                             th:alt="${produto.nome}">
+                        <span class="product-badge badge-new" th:if="${produto.quantidadeEstoque > 10}">Novo</span>
+                        <span class="product-badge badge-sale" th:if="${produto.quantidadeEstoque <= 10 && produto.quantidadeEstoque > 0}">Últimas unidades</span>
+                        <span class="product-badge" style="background:#FF6B6B;color:white;" th:if="${produto.quantidadeEstoque == 0}">Esgotado</span>
+                    </div>
+                    <div class="product-info">
+                        <h3 th:text="${produto.nome}">Nome</h3>
+                        <div class="product-category">
+                            <i class="fas fa-tag"></i> <span th:text="${produto.categoria}">Categoria</span>
+                            · <i class="fas fa-ruler"></i> <span th:text="${produto.tamanho}">M</span>
+                            · <i class="fas fa-palette"></i> <span th:text="${produto.cor}">Cor</span>
+                        </div>
+                        <div class="product-price">
+                            R$ <span th:text="${#numbers.formatDecimal(produto.preco, 0, 2, 'COMMA')}">0,00</span>
+                        </div>
+                        <div class="product-meta">
+                            <span><i class="fas fa-box"></i> <span th:text="${produto.quantidadeEstoque}">10</span> unid.</span>
+                            <span th:if="${produto.vendedor != null}"><i class="fas fa-store"></i> <span th:text="${produto.vendedor.nomeLoja}">Loja</span></span>
+                        </div>
+                        <div class="product-actions">
+                            <a th:href="@{'/produtos/detalhe/' + ${produto.id}}" class="btn btn-outline btn-sm">
+                                <i class="fas fa-eye"></i> Detalhes
+                            </a>
+                            <a th:href="@{'/comprar/' + ${produto.id}}" class="btn btn-primary btn-sm" sec:authorize="hasRole('CLIENTE')">
+                                <i class="fas fa-shopping-cart"></i> Comprar
+                            </a>
+                            <button class="btn btn-primary btn-sm" sec:authorize="!isAuthenticated()" onclick="window.location.href='/login'">
+                                <i class="fas fa-lock"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${produtos == null || produtos.isEmpty()}" style="text-align:center;padding:4rem 0;">
+            <i class="fas fa-box-open" style="font-size:4rem;color:#DFE6E9;"></i>
+            <h3 style="margin-top:1rem;color:#636E72;">Nenhum produto encontrado</h3>
+            <p style="color:#636E72;">Tente ajustar os filtros ou volte mais tarde.</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h4>👗 StyleStore</h4>
+                <p>UFScar - Departamento de Computação</p>
+                <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);">Yara Vieira de Lima - RA: 824341</p>
+            </div>
+            <div>
+                <h4>Idioma</h4>
+                <a href="?lang=pt_BR">🇧🇷 Português</a>
+                <a href="?lang=en">🇺🇸 English</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 StyleStore - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

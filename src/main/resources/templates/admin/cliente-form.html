@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{cliente.title}">Cliente</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <h1 th:text="#{app.title}">Sistema de Compra e Venda de Roupas</h1>
+        <div>
+            <a th:href="@{/admin/dashboard}">Dashboard</a>
+            <a th:href="@{/logout}">Sair</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <div class="container">
+        <h2 th:text="#{cliente.create}">Cadastrar Cliente</h2>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <form th:action="@{/admin/clientes/salvar}" th:object="${cliente}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="form-group">
+                <label th:text="#{cliente.name}">Nome</label>
+                <input type="text" th:field="*{nome}" required>
+                <div class="error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{cliente.email}">Email</label>
+                <input type="email" th:field="*{email}" required>
+                <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{cliente.cpf}">CPF</label>
+                <input type="text" th:field="*{cpf}" required>
+                <div class="error" th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></div>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{cliente.phone}">Telefone</label>
+                <input type="text" th:field="*{telefone}">
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{cliente.birthdate}">Data de Nascimento</label>
+                <input type="date" th:field="*{dataNascimento}">
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{cliente.gender}">Sexo</label>
+                <input type="text" th:field="*{sexo}">
+            </div>
+
+            <!-- Endereço do cliente (se suportado no modelo) -->
+            <fieldset>
+                <legend th:text="#{cliente.address}">Endereço</legend>
+
+                <div class="form-group">
+                    <label>Logradouro</label>
+                    <input type="text" th:field="*{endereco.logradouro}">
+                </div>
+                <div class="form-group">
+                    <label>Número</label>
+                    <input type="text" th:field="*{endereco.numero}">
+                </div>
+                <div class="form-group">
+                    <label>Bairro</label>
+                    <input type="text" th:field="*{endereco.bairro}">
+                </div>
+                <div class="form-group">
+                    <label>Cidade</label>
+                    <input type="text" th:field="*{endereco.cidade}">
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <input type="text" th:field="*{endereco.estado}">
+                </div>
+            </fieldset>
+
+            <button type="submit" class="btn btn-primary">Salvar</button>
+        </form>
+
+        <hr>
+
+        <!-- Caso esteja em modo edição, o botão anterior envia para salvar/salvar e o service faz update -->
+        <form th:action="@{/admin/clientes/atualizar}" th:object="${cliente}" method="post" style="margin-top: 8px;">
+            <input type="hidden" th:field="*{id}"/>
+            <button type="submit" class="btn btn-secondary">Atualizar</button>
+        </form>
+
+    </div>
+</main>
+</body>
+</html>
+

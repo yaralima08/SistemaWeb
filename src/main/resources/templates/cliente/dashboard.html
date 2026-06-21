@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Meus Pedidos - StyleStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span class="logo-icon">👗</span>
+                <span>StyleStore</span>
+            </a>
+            <nav class="nav-menu">
+                <a href="/"><i class="fas fa-home"></i> Início</a>
+                <a href="/produtos"><i class="fas fa-tshirt"></i> Produtos</a>
+                <a href="/cliente/dashboard" class="active"><i class="fas fa-user"></i> Meus Pedidos</a>
+                <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main style="max-width:1280px;margin:0 auto;padding:2rem;">
+        <h1 style="margin-bottom:2rem;"><i class="fas fa-shopping-bag" style="color:#6C63FF;"></i> Meus Pedidos</h1>
+
+        <div th:if="${pedidos == null || pedidos.isEmpty()}" style="text-align:center;padding:4rem 0;">
+            <i class="fas fa-box-open" style="font-size:4rem;color:#DFE6E9;"></i>
+            <h3 style="margin-top:1rem;color:#636E72;">Nenhum pedido realizado</h3>
+            <p style="color:#636E72;">Explore os produtos e faça sua primeira compra!</p>
+            <a href="/produtos" class="btn btn-primary" style="margin-top:1rem;">
+                <i class="fas fa-shopping-bag"></i> Explorar Produtos
+            </a>
+        </div>
+
+        <div th:if="${pedidos != null && !pedidos.isEmpty()}">
+            <div th:each="pedido : ${pedidos}" style="background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);padding:1.5rem;margin-bottom:1.5rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border-bottom:1px solid #DFE6E9;padding-bottom:1rem;">
+                    <div>
+                        <h3>Pedido #<span th:text="${pedido.id}">1</span></h3>
+                        <p style="color:#636E72;font-size:0.9rem;">
+                            <i class="fas fa-calendar"></i> <span th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}">22/06/2026</span>
+                        </p>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:1rem;">
+                        <span style="font-weight:bold;font-size:1.2rem;color:#6C63FF;" 
+                              th:text="'R$ ' + ${#numbers.formatDecimal(pedido.total, 0, 2, 'COMMA')}">
+                            R$ 0,00
+                        </span>
+                        <span th:if="${pedido.status == 'PENDENTE'}" style="background:#FFC107;color:#2D3436;padding:0.3rem 0.8rem;border-radius:50px;font-size:0.8rem;">
+                            <i class="fas fa-clock"></i> Pendente
+                        </span>
+                        <span th:if="${pedido.status == 'PAGO'}" style="background:#6C63FF;color:white;padding:0.3rem 0.8rem;border-radius:50px;font-size:0.8rem;">
+                            <i class="fas fa-check"></i> Pago
+                        </span>
+                        <span th:if="${pedido.status == 'ENVIADO'}" style="background:#00C9A7;color:white;padding:0.3rem 0.8rem;border-radius:50px;font-size:0.8rem;">
+                            <i class="fas fa-truck"></i> Enviado
+                        </span>
+                        <span th:if="${pedido.status == 'ENTREGUE'}" style="background:#2D3436;color:white;padding:0.3rem 0.8rem;border-radius:50px;font-size:0.8rem;">
+                            <i class="fas fa-home"></i> Entregue
+                        </span>
+                    </div>
+                </div>
+
+                <div style="margin-top:1rem;">
+                    <div th:each="item : ${pedido.itens}" style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid #F8F9FA;">
+                        <div>
+                            <strong th:text="${item.produto.nome}">Produto</strong>
+                            <span style="color:#636E72;font-size:0.9rem;"> × <span th:text="${item.quantidade}">1</span></span>
+                        </div>
+                        <span style="color:#636E72;" th:text="'R$ ' + ${#numbers.formatDecimal(item.subtotal, 0, 2, 'COMMA')}">
+                            R$ 0,00
+                        </span>
+                    </div>
+                </div>
+
+                <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid #DFE6E9;">
+                    <p style="font-size:0.9rem;color:#636E72;">
+                        <i class="fas fa-map-marker-alt"></i> 
+                        <span th:text="${pedido.enderecoEntrega.logradouro}">Rua</span>,
+                        <span th:text="${pedido.enderecoEntrega.numero}">123</span>
+                        <span th:text="${pedido.enderecoEntrega.complemento}">Complemento</span>
+                        - <span th:text="${pedido.enderecoEntrega.bairro}">Bairro</span>,
+                        <span th:text="${pedido.enderecoEntrega.cidade}">Cidade</span> - 
+                        <span th:text="${pedido.enderecoEntrega.estado}">SP</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <h4>👗 StyleStore</h4>
+                <p>UFScar - Departamento de Computação</p>
+                <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);">Yara Vieira de Lima - RA: 824341</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 StyleStore - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,5 +1,13 @@
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/LojaRoupasApplication.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/controller/ClienteMvcController.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/controller/HomeController.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/controller/PedidoMvcController.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/controller/RoupaMvcController.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/controller/VendedorMvcController.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/converter/StringToClienteConverter.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/converter/StringToLongConverter.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/converter/StringToRoupaConverter.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/converter/StringToVendedorConverter.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/dao/IClienteDAO.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/dao/IPedidoDAO.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/dao/IRoupaDAO.java
@@ -12,6 +20,10 @@
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/PedidoService.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/RoupaService.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/VendedorService.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/impl/ClienteServiceImpl.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/impl/PedidoServiceImpl.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/impl/RoupaServiceImpl.java
+/workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/service/impl/VendedorServiceImpl.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/validation/CNPJ.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/validation/CNPJValidatior.java
 /workspaces/SistemaWeb/src/main/java/br/ufscar/dc/dsw/validation/CPF.java
