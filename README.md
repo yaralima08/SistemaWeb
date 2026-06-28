@@ -79,7 +79,7 @@ http://localhost:8080/h2-console
 
 Configurações:
 
-* JDBC URL: jdbc:h2:mem:roupasdb
+* JDBC URL: jdbc:h2:mem:compravendadb
 * Usuário: sa
 * Senha: (vazia)
 
