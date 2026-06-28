@@ -32,26 +32,19 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (clienteOpt.isPresent()) {
             Cliente cliente = clienteOpt.get();
             System.out.println("✅ Cliente encontrado: " + cliente.getEmail());
-            System.out.println("   Senha criptografada: " + cliente.getSenha());
-            System.out.println("   Ativo: " + cliente.isAtivo());
-            
-            if (!cliente.isAtivo()) {
-                throw new UsernameNotFoundException("Usuário inativo");
-            }
             
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority("ROLE_CLIENTE"));
             
-            // Se for admin
+            // Se for admin (email específico)
             if ("admin@stylestore.com".equals(email)) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                System.out.println("   ➡️ ROLE_ADMIN adicionada");
             }
             
-            return new User(
-                cliente.getEmail(),
-                cliente.getSenha(),
-                authorities
-            );
+            System.out.println("   📋 Autoridades: " + authorities);
+            
+            return new User(cliente.getEmail(), cliente.getSenha(), authorities);
         }
 
         // 2. Buscar como Vendedor
@@ -59,21 +52,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (vendedorOpt.isPresent()) {
             Vendedor vendedor = vendedorOpt.get();
             System.out.println("✅ Vendedor encontrado: " + vendedor.getEmail());
-            System.out.println("   Senha criptografada: " + vendedor.getSenha());
-            System.out.println("   Ativo: " + vendedor.isAtivo());
-            
-            if (!vendedor.isAtivo()) {
-                throw new UsernameNotFoundException("Usuário inativo");
-            }
             
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority("ROLE_VENDEDOR"));
             
-            return new User(
-                vendedor.getEmail(),
-                vendedor.getSenha(),
-                authorities
-            );
+            System.out.println("   📋 Autoridades: " + authorities);
+            
+            return new User(vendedor.getEmail(), vendedor.getSenha(), authorities);
         }
 
         System.out.println("❌ Usuário NÃO encontrado: " + email);

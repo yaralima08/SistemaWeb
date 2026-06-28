@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido confirmado</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <h1 th:text="#{app.title}">Sistema de Compra e Venda de Roupas</h1>
+        <div>
+            <a th:href="@{/cliente/pedidos}" sec:authorize="hasRole('CLIENTE')">Meus pedidos</a>
+            <a th:href="@{/logout}">Sair</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <div class="container">
+        <h2 th:text="#{pedido.confirmado}">Pedido Confirmado</h2>
+
+        <div class="card">
+            <p><strong th:text="ID:">ID:</strong> <span th:text="${pedido.id}"></span></p>
+            <p><strong>Data:</strong> <span th:text="${pedido.dataPedido}"></span></p>
+            <p><strong>Status:</strong> <span th:text="${pedido.status}"></span></p>
+            <p><strong>Total:</strong> <span th:text="${pedido.total}"></span></p>
+
+            <h3 th:text="#{pedido.items}">Itens</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Qtd</th>
+                        <th>Preço</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${pedido.itens}">
+                        <td th:text="${item.produto.nome}"></td>
+                        <td th:text="${item.quantidade}"></td>
+                        <td th:text="${item.precoUnitario}"></td>
+                        <td th:text="${item.subtotal}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 th:text="#{pedido.address}">Endereço de entrega</h3>
+            <p th:text="${pedido.enderecoEntrega.logradouro + ', ' + pedido.enderecoEntrega.numero}"></p>
+            <p th:text="${pedido.enderecoEntrega.bairro + ' - ' + pedido.enderecoEntrega.cidade + '/' + pedido.enderecoEntrega.estado}"></p>
+        </div>
+
+        <a th:href="@{/cliente/pedidos}" class="btn">Voltar para pedidos</a>
+    </div>
+</main>
+
+</body>
+</html>
+

@@ -11,9 +11,13 @@ import java.util.List;
 
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
-
-    List<Produto> findByVendedorId(Long vendedorId);
-
+    
+    @Query("SELECT p FROM Produto p WHERE p.vendedor.id = :vendedorId AND p.ativo = true")
+    List<Produto> findByVendedorId(@Param("vendedorId") Long vendedorId);
+    
+    @Query("SELECT p FROM Produto p WHERE p.ativo = true")
+    List<Produto> findAllAtivos();
+    
     @Query("SELECT p FROM Produto p WHERE p.ativo = true " +
            "AND (:categoria IS NULL OR :categoria = '' OR p.categoria = :categoria) " +
            "AND (:tamanho IS NULL OR :tamanho = '' OR p.tamanho = :tamanho) " +

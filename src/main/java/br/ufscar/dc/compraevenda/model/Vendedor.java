@@ -1,5 +1,6 @@
 package br.ufscar.dc.compraevenda.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Vendedor {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,9 +35,11 @@ public class Vendedor {
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_id")
+    @JsonIgnore  // ← ADICIONADO PARA EVITAR RECURSÃO
     private Endereco endereco;
     
     @OneToMany(mappedBy = "vendedor", cascade = CascadeType.ALL)
+    @JsonIgnore  // ← ADICIONADO PARA EVITAR RECURSÃO
     private List<Produto> produtos = new ArrayList<>();
     
     private boolean ativo = true;

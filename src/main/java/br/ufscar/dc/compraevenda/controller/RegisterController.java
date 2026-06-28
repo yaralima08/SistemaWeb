@@ -45,23 +45,19 @@ public class RegisterController {
     }
 
     @PostMapping("/cliente/salvar")
-    public String salvarCliente(
-            @ModelAttribute Cliente cliente,
-            @ModelAttribute Endereco endereco,
-            RedirectAttributes redirectAttributes) {
+    public String salvarCliente(@ModelAttribute Cliente cliente,
+                                @ModelAttribute Endereco endereco,
+                                RedirectAttributes redirectAttributes) {
         
         System.out.println("📝 Cadastrando cliente: " + cliente.getEmail());
-        System.out.println("   Nome: " + cliente.getNome());
-        System.out.println("   CPF: " + cliente.getCpf());
         
         try {
             cliente.setEndereco(endereco);
-            Cliente salvo = clienteService.salvar(cliente);
-            System.out.println("✅ Cliente salvo com ID: " + salvo.getId());
+            clienteService.salvar(cliente);
             redirectAttributes.addFlashAttribute("success", "✅ Cadastro realizado com sucesso! Faça login.");
             return "redirect:/login";
         } catch (Exception e) {
-            System.err.println("❌ Erro ao salvar cliente: " + e.getMessage());
+            System.err.println("❌ Erro: " + e.getMessage());
             redirectAttributes.addFlashAttribute("error", "❌ " + e.getMessage());
             redirectAttributes.addFlashAttribute("cliente", cliente);
             redirectAttributes.addFlashAttribute("endereco", endereco);
@@ -70,23 +66,19 @@ public class RegisterController {
     }
 
     @PostMapping("/vendedor/salvar")
-    public String salvarVendedor(
-            @ModelAttribute Vendedor vendedor,
-            @ModelAttribute Endereco endereco,
-            RedirectAttributes redirectAttributes) {
+    public String salvarVendedor(@ModelAttribute Vendedor vendedor,
+                                 @ModelAttribute Endereco endereco,
+                                 RedirectAttributes redirectAttributes) {
         
         System.out.println("📝 Cadastrando vendedor: " + vendedor.getEmail());
-        System.out.println("   Nome da Loja: " + vendedor.getNomeLoja());
-        System.out.println("   CNPJ: " + vendedor.getCnpj());
         
         try {
             vendedor.setEndereco(endereco);
-            Vendedor salvo = vendedorService.salvar(vendedor);
-            System.out.println("✅ Vendedor salvo com ID: " + salvo.getId());
+            vendedorService.salvar(vendedor);
             redirectAttributes.addFlashAttribute("success", "✅ Cadastro realizado com sucesso! Faça login.");
             return "redirect:/login";
         } catch (Exception e) {
-            System.err.println("❌ Erro ao salvar vendedor: " + e.getMessage());
+            System.err.println("❌ Erro: " + e.getMessage());
             redirectAttributes.addFlashAttribute("error", "❌ " + e.getMessage());
             redirectAttributes.addFlashAttribute("vendedor", vendedor);
             redirectAttributes.addFlashAttribute("endereco", endereco);

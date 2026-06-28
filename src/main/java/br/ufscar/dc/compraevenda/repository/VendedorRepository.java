@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface VendedorRepository extends JpaRepository<Vendedor, Long> {
     Optional<Vendedor> findByEmail(String email);
     boolean existsByEmail(String email);
-    boolean existsByCnpj(String cnpj);  // ← ADICIONAR ESTE MÉTODO
+    boolean existsByCnpj(String cnpj);  
 }

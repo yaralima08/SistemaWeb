@@ -18,7 +18,6 @@ public class ProdutoController {
 
     private final ProdutoService produtoService;
 
-    // Página inicial
     @GetMapping("/")
     public String index(Model model) {
         List<Produto> produtos = produtoService.listarTodos();
@@ -26,7 +25,6 @@ public class ProdutoController {
         return "index";
     }
 
-    // Listagem de produtos com filtros
     @GetMapping("/produtos")
     public String listarProdutos(
             @RequestParam(required = false) String categoria,
@@ -35,11 +33,6 @@ public class ProdutoController {
             @RequestParam(required = false) BigDecimal precoMin,
             @RequestParam(required = false) BigDecimal precoMax,
             Model model) {
-        
-        System.out.println("🔍 Filtrando produtos:");
-        System.out.println("   Categoria: " + categoria);
-        System.out.println("   Tamanho: " + tamanho);
-        System.out.println("   Cor: " + cor);
         
         List<Produto> produtos = produtoService.filtrar(categoria, tamanho, cor, precoMin, precoMax);
         model.addAttribute("produtos", produtos);
@@ -50,11 +43,21 @@ public class ProdutoController {
         return "produtos/listagem";
     }
 
-    // Detalhe do produto
     @GetMapping("/produtos/detalhe/{id}")
     public String detalheProduto(@PathVariable Long id, Model model) {
+        System.out.println("🔍 Buscando detalhes do produto ID: " + id);
+        
         Produto produto = produtoService.buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() -> {
+                    System.err.println("❌ Produto não encontrado: " + id);
+                    return new RuntimeException("Produto não encontrado");
+                });
+        
+        System.out.println("📦 Produto encontrado: " + produto.getNome());
+        System.out.println("   Preço: R$ " + produto.getPreco());
+        System.out.println("   Estoque: " + produto.getQuantidadeEstoque());
+        System.out.println("   Imagens: " + (produto.getImagens() != null ? produto.getImagens().size() : 0));
+        
         model.addAttribute("produto", produto);
         return "produtos/detalhe";
     }

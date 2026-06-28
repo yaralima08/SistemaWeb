@@ -17,7 +17,7 @@ public class LocaleConfig implements WebMvcConfigurer {
     public LocaleResolver localeResolver() {
         CookieLocaleResolver resolver = new CookieLocaleResolver("locale");
         resolver.setDefaultLocale(new Locale("pt", "BR"));
-        resolver.setCookieMaxAge(3600);
+        resolver.setCookieMaxAge(60 * 60 * 24 * 30); // 30 dias
         return resolver;
     }
 

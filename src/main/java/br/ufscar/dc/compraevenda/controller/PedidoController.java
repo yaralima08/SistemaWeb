@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@RequestMapping("/comprar")
 @RequiredArgsConstructor
 public class PedidoController {
 
@@ -24,31 +23,61 @@ public class PedidoController {
     private final ClienteService clienteService;
     private final ProdutoService produtoService;
 
-    @GetMapping("/{produtoId}")
+    // ===== PÁGINA DE COMPRA - CHECKOUT =====
+    @GetMapping("/comprar/{produtoId}")
     public String comprar(@PathVariable Long produtoId, Authentication authentication, Model model) {
-        // Verifica se o usuário está logado
+        System.out.println("🛒 Entrando na página de compra - Produto ID: " + produtoId);
+        
         if (authentication == null || !authentication.isAuthenticated()) {
+            System.out.println("❌ Usuário não autenticado - redirecionando para login");
             return "redirect:/login";
         }
 
+        String email = authentication.getName();
+        System.out.println("👤 Cliente logado: " + email);
+        
+        Cliente cliente = clienteService.buscarPorEmail(email)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        
         Produto produto = produtoService.buscarPorId(produtoId)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
         
+        System.out.println("📦 Produto: " + produto.getNome() + " - R$ " + produto.getPreco());
+        
         model.addAttribute("produto", produto);
-        model.addAttribute("endereco", new Endereco());
+        model.addAttribute("cliente", cliente);
+        
+        // Se o cliente tem endereço, usa ele, senão cria um novo
+        Endereco endereco = cliente.getEndereco();
+        if (endereco == null) {
+            endereco = new Endereco();
+            System.out.println("⚠️ Cliente sem endereço - criando novo");
+        } else {
+            System.out.println("📌 Endereço do cliente: " + endereco.getLogradouro() + ", " + endereco.getNumero());
+        }
+        model.addAttribute("endereco", endereco);
         model.addAttribute("quantidade", 1);
         
         return "pedido/checkout";
     }
 
-    @PostMapping("/finalizar")
+    // ===== FINALIZAR COMPRA =====
+    @PostMapping("/comprar/finalizar")
     public String finalizarCompra(
             @RequestParam Long produtoId,
             @RequestParam Integer quantidade,
-            @ModelAttribute Endereco endereco,
+            @RequestParam(required = false) String logradouro,
+            @RequestParam(required = false) String numero,
+            @RequestParam(required = false) String complemento,
+            @RequestParam(required = false) String bairro,
+            @RequestParam(required = false) String cidade,
+            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) String cep,
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
+        System.out.println("🛒 Finalizando compra - Produto ID: " + produtoId + ", Quantidade: " + quantidade);
+        
         try {
             String email = authentication.getName();
             Cliente cliente = clienteService.buscarPorEmail(email)
@@ -56,6 +85,25 @@ public class PedidoController {
 
             Produto produto = produtoService.buscarPorId(produtoId)
                     .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+            // Verificar estoque
+            if (produto.getQuantidadeEstoque() < quantidade) {
+                throw new RuntimeException("Estoque insuficiente. Disponível: " + produto.getQuantidadeEstoque());
+            }
+
+            // Usar endereço do cliente ou o enviado pelo formulário
+            Endereco endereco = cliente.getEndereco();
+            if (endereco == null) {
+                endereco = new Endereco();
+                endereco.setLogradouro(logradouro);
+                endereco.setNumero(numero);
+                endereco.setComplemento(complemento);
+                endereco.setBairro(bairro);
+                endereco.setCidade(cidade);
+                endereco.setEstado(estado);
+                endereco.setCep(cep);
+                System.out.println("📌 Endereço do formulário: " + logradouro + ", " + numero);
+            }
 
             // Criar pedido
             Pedido pedido = new Pedido();
@@ -70,15 +118,17 @@ public class PedidoController {
             pedido.addItem(item);
 
             // Salvar pedido
-            pedidoService.criarPedido(pedido, cliente);
+            Pedido pedidoSalvo = pedidoService.criarPedido(pedido, cliente);
+            System.out.println("✅ Pedido criado com sucesso! ID: " + pedidoSalvo.getId());
 
             redirectAttributes.addFlashAttribute("success", 
-                "Compra realizada com sucesso! Pedido #" + pedido.getId());
+                "✅ Compra realizada com sucesso! Pedido #" + pedidoSalvo.getId());
 
             return "redirect:/cliente/pedidos";
 
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            System.err.println("❌ Erro na compra: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "❌ " + e.getMessage());
             return "redirect:/comprar/" + produtoId;
         }
     }

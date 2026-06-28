@@ -32,6 +32,30 @@
         .register-header .logo-icon { font-size: 3rem; display: block; }
         .register-header h1 { font-size: 1.8rem; color: #2D3436; margin-top: 0.5rem; }
         .register-header p { color: #636E72; }
+        .register-type {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .register-type a {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid #DFE6E9;
+            color: #636E72;
+        }
+        .register-type a:hover {
+            border-color: #6C63FF;
+            color: #6C63FF;
+        }
+        .register-type a.active {
+            background: #6C63FF;
+            color: white;
+            border-color: #6C63FF;
+        }
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -108,10 +132,22 @@
         .alert-error { background: #FDD8D8; color: #9B2C2C; border-left: 4px solid #FF4757; }
         .alert-success { background: #D4F5E9; color: #006644; border-left: 4px solid #00C9A7; }
         .full-width { grid-column: 1 / -1; }
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #636E72;
+        }
+        .login-link a {
+            color: #6C63FF;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .login-link a:hover { text-decoration: underline; }
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
             .register-card { padding: 2rem; }
             .form-actions { flex-direction: column; }
+            .register-type { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
@@ -121,7 +157,17 @@
             <div class="register-header">
                 <span class="logo-icon">🏪</span>
                 <h1>Abrir Loja</h1>
-                <p>Cadastre-se como <strong>Vendedor</strong></p>
+                <p>Cadastre-se como vendedor e comece a vender</p>
+            </div>
+
+            <!-- ===== BOTÕES PARA ESCOLHER O TIPO ===== -->
+            <div class="register-type">
+                <a href="/register/cliente">
+                    <i class="fas fa-user"></i> Cliente
+                </a>
+                <a href="/register/vendedor" class="active">
+                    <i class="fas fa-store"></i> Vendedor
+                </a>
             </div>
 
             <div th:if="${error}" class="alert alert-error">
@@ -206,6 +252,10 @@
                     </a>
                 </div>
             </form>
+
+            <div class="login-link">
+                <p>Já tem uma conta? <a href="/login">Faça login</a></p>
+            </div>
         </div>
     </div>
 </body>

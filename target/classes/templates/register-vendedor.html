@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Vendedor - StyleStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .register-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6C63FF 0%, #8B7FFF 100%);
+            padding: 3rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .register-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: fadeInUp 0.6s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .register-header { text-align: center; margin-bottom: 2rem; }
+        .register-header .logo-icon { font-size: 3rem; display: block; }
+        .register-header h1 { font-size: 1.8rem; color: #2D3436; margin-top: 0.5rem; }
+        .register-header p { color: #636E72; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .form-group { margin-bottom: 0; }
+        .form-group label { display: block; font-weight: 600; font-size: 0.9rem; color: #2D3436; margin-bottom: 0.3rem; }
+        .form-group label .required { color: #FF4757; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 2px solid #DFE6E9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #F8F9FA;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #6C63FF;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(108,99,255,0.1);
+            outline: none;
+        }
+        .form-group .help-text { font-size: 0.8rem; color: #ADB5BD; margin-top: 0.2rem; }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #F8F9FA;
+        }
+        .btn-register {
+            flex: 1;
+            padding: 0.8rem;
+            background: #6C63FF;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108,99,255,0.4);
+        }
+        .btn-register:hover {
+            background: #5A52D5;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108,99,255,0.5);
+        }
+        .btn-cancel {
+            padding: 0.8rem 2rem;
+            background: #F8F9FA;
+            color: #636E72;
+            border: 2px solid #DFE6E9;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-cancel:hover { background: #DFE6E9; }
+        .alert {
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .alert-error { background: #FDD8D8; color: #9B2C2C; border-left: 4px solid #FF4757; }
+        .alert-success { background: #D4F5E9; color: #006644; border-left: 4px solid #00C9A7; }
+        .full-width { grid-column: 1 / -1; }
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .register-card { padding: 2rem; }
+            .form-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-page">
+        <div class="register-card">
+            <div class="register-header">
+                <span class="logo-icon">🏪</span>
+                <h1>Abrir Loja</h1>
+                <p>Cadastre-se como <strong>Vendedor</strong></p>
+            </div>
+
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}">Erro ao cadastrar</span>
+            </div>
+
+            <form th:action="@{/register/vendedor/salvar}" th:object="${vendedor}" method="post">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Nome da Loja <span class="required">*</span></label>
+                        <input type="text" th:field="*{nomeLoja}" placeholder="Nome da sua loja" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>E-mail <span class="required">*</span></label>
+                        <input type="email" th:field="*{email}" placeholder="loja@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>CNPJ <span class="required">*</span></label>
+                        <input type="text" th:field="*{cnpj}" placeholder="00.000.000/0000-00" required>
+                        <span class="help-text">Formato: 00.000.000/0000-00</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Senha <span class="required">*</span></label>
+                        <input type="password" th:field="*{senha}" placeholder="Mínimo 6 caracteres" required>
+                        <span class="help-text">Mínimo 6 caracteres</span>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Descrição da Loja</label>
+                        <textarea th:field="*{descricao}" rows="3" placeholder="Descreva sua loja, produtos, etc..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Logradouro <span class="required">*</span></label>
+                        <input type="text" th:field="${endereco.logradouro}" placeholder="Rua, Av..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Número <span class="required">*</span></label>
+                        <input type="text" th:field="${endereco.numero}" placeholder="123" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Complemento</label>
+                        <input type="text" th:field="${endereco.complemento}" placeholder="Sala, Loja...">
+                    </div>
+                    <div class="form-group">
+                        <label>Bairro <span class="required">*</span></label>
+                        <input type="text" th:field="${endereco.bairro}" placeholder="Bairro" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Cidade <span class="required">*</span></label>
+                        <input type="text" th:field="${endereco.cidade}" placeholder="Cidade" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado <span class="required">*</span></label>
+                        <select th:field="${endereco.estado}" required>
+                            <option value="">Selecione...</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PR">Paraná</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="GO">Goiás</option>
+                            <option value="DF">Distrito Federal</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>CEP <span class="required">*</span></label>
+                        <input type="text" th:field="${endereco.cep}" placeholder="00000-000" required>
+                        <span class="help-text">Formato: 00000-000</span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-register">
+                        <i class="fas fa-store"></i> Abrir Loja
+                    </button>
+                    <a href="/login" class="btn-cancel">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

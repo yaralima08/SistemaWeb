@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${produto.nome} + ' - StyleStore'">Produto - StyleStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .detail-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .detail-images {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .detail-images .main-image {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid #DFE6E9;
+            background: #F8F6FF;
+        }
+        .detail-images .thumbnails {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 0.5rem;
+        }
+        .detail-images .thumbnails img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #DFE6E9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .detail-images .thumbnails img:hover {
+            border-color: #6C63FF;
+            transform: scale(1.05);
+        }
+        .detail-info h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #2D3436;
+        }
+        .detail-info .category {
+            color: #636E72;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .detail-info .category i { margin-right: 0.3rem; }
+        .detail-info .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #6C63FF;
+            margin: 1rem 0;
+        }
+        .detail-info .stock {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .stock.in-stock { background: #D4F5E9; color: #006644; }
+        .stock.low-stock { background: #FFF3CD; color: #856404; }
+        .stock.out-of-stock { background: #FDD8D8; color: #9B2C2C; }
+        .detail-info .description {
+            color: #636E72;
+            line-height: 1.8;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #F8F9FA;
+            border-radius: 8px;
+            border-left: 4px solid #6C63FF;
+        }
+        .detail-info .specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #F8F6FF;
+            border-radius: 8px;
+        }
+        .detail-info .specs .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid #F0EDFF;
+        }
+        .detail-info .specs .spec-item .label { color: #636E72; font-weight: 500; }
+        .detail-info .specs .spec-item .value { color: #2D3436; font-weight: 600; }
+        .detail-info .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .detail-info .actions .btn { padding: 0.8rem 2rem; border-radius: 12px; }
+        .detail-info .store-info {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #F8F6FF;
+            border-radius: 8px;
+            border: 1px solid #F0EDFF;
+        }
+        .detail-info .store-info .store-name {
+            font-weight: 600;
+            color: #6C63FF;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #6C63FF;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover { text-decoration: underline; }
+        @media (max-width: 768px) {
+            .detail-grid { grid-template-columns: 1fr; }
+            .detail-info .specs { grid-template-columns: 1fr; }
+            .detail-images .main-image { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span class="logo-icon">👗</span>
+                <span>StyleStore</span>
+            </a>
+            <nav class="nav-menu">
+                <a href="/"><i class="fas fa-home"></i> Início</a>
+                <a href="/produtos"><i class="fas fa-tshirt"></i> Produtos</a>
+                
+                <!-- Botões de idioma -->
+                <div style="display:flex;gap:0.3rem;align-items:center;margin-left:0.5rem;">
+                    <a href="?lang=pt_BR" title="Português" style="padding:0.3rem 0.5rem;font-size:1.2rem;text-decoration:none;background:rgba(255,255,255,0.15);border-radius:4px;">
+                        🇧🇷
+                    </a>
+                    <a href="?lang=en" title="English" style="padding:0.3rem 0.5rem;font-size:1.2rem;text-decoration:none;background:rgba(255,255,255,0.15);border-radius:4px;">
+                        🇺🇸
+                    </a>
+                </div>
+                
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="btn btn-primary" style="padding:0.5rem 1.5rem;">
+                        <i class="fas fa-sign-in-alt"></i> Entrar
+                    </a>
+                </div>
+                <div sec:authorize="isAuthenticated()">
+                    <a href="/logout" class="btn btn-primary" style="padding:0.5rem 1.5rem;background:rgba(255,255,255,0.15);">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="detail-container">
+        <a href="/produtos" class="back-link">
+            <i class="fas fa-arrow-left"></i> Voltar para produtos
+        </a>
+
+        <div class="detail-grid">
+            <!-- Imagens -->
+            <div class="detail-images">
+                <img th:if="${produto.imagens != null && !produto.imagens.isEmpty()}" 
+                     th:src="${produto.imagens[0]}" 
+                     th:alt="${produto.nome}"
+                     class="main-image"
+                     id="mainImage">
+                <img th:unless="${produto.imagens != null && !produto.imagens.isEmpty()}" 
+                     src="/images/placeholder.jpg" 
+                     th:alt="${produto.nome}"
+                     class="main-image">
+                
+                <div class="thumbnails" th:if="${produto.imagens != null && produto.imagens.size() > 1}">
+                    <img th:each="img : ${produto.imagens}" 
+                         th:src="${img}" 
+                         th:alt="${produto.nome}"
+                         onclick="document.getElementById('mainImage').src=this.src">
+                </div>
+            </div>
+
+            <!-- Informações -->
+            <div class="detail-info">
+                <h1 th:text="${produto.nome}">Nome do Produto</h1>
+                
+                <div class="category">
+                    <i class="fas fa-tag"></i> <span th:text="${produto.categoria}">Categoria</span>
+                    · <i class="fas fa-ruler"></i> <span th:text="${produto.tamanho}">Tamanho</span>
+                    · <i class="fas fa-palette"></i> <span th:text="${produto.cor}">Cor</span>
+                </div>
+
+                <div class="price">R$ <span th:text="${#numbers.formatDecimal(produto.preco, 0, 2, 'COMMA')}">0,00</span></div>
+
+                <div th:if="${produto.quantidadeEstoque > 10}" class="stock in-stock">
+                    <i class="fas fa-check-circle"></i> Em estoque (<span th:text="${produto.quantidadeEstoque}">0</span> unidades)
+                </div>
+                <div th:if="${produto.quantidadeEstoque <= 10 && produto.quantidadeEstoque > 0}" class="stock low-stock">
+                    <i class="fas fa-exclamation-triangle"></i> Últimas unidades! (<span th:text="${produto.quantidadeEstoque}">0</span> restantes)
+                </div>
+                <div th:if="${produto.quantidadeEstoque == 0}" class="stock out-of-stock">
+                    <i class="fas fa-times-circle"></i> Esgotado
+                </div>
+
+                <div class="description" th:text="${produto.descricao}">
+                    Descrição do produto
+                </div>
+
+                <div class="specs">
+                    <div class="spec-item">
+                        <span class="label">Categoria</span>
+                        <span class="value" th:text="${produto.categoria}">Categoria</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="label">Tamanho</span>
+                        <span class="value" th:text="${produto.tamanho}">Tamanho</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="label">Cor</span>
+                        <span class="value" th:text="${produto.cor}">Cor</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="label">Estoque</span>
+                        <span class="value" th:text="${produto.quantidadeEstoque} + ' unidades'">0</span>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a th:href="@{'/comprar/' + ${produto.id}}" 
+                       class="btn btn-primary" 
+                       sec:authorize="hasAnyRole('CLIENTE', 'ADMIN')">
+                        <i class="fas fa-shopping-cart"></i> Comprar Agora
+                    </a>
+                    <a href="/produtos" class="btn btn-outline">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+
+                <div class="store-info">
+                    <i class="fas fa-store" style="color:#6C63FF;"></i>
+                    Vendido por: <span class="store-name" th:text="${produto.vendedor != null ? produto.vendedor.nomeLoja : 'N/A'}">Loja</span>
+                    <span th:if="${produto.vendedor != null && produto.vendedor.descricao != null}" 
+                          style="color:#636E72;font-size:0.9rem;display:block;margin-top:0.3rem;" 
+                          th:text="${produto.vendedor.descricao}">Descrição da loja</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer" style="margin-top:2rem;">
+        <div class="footer-content">
+            <div>
+                <h4>👗 StyleStore</h4>
+                <p>UFScar - Departamento de Computação</p>
+                <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);">Yara Vieira de Lima - RA: 824341</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 StyleStore - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

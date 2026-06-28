@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Produto - StyleStore</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; color: #2D3436; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .form-group label { font-weight: 600; font-size: 0.9rem; color: #2D3436; }
+        .form-group label .required { color: #FF4757; }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.7rem 1rem;
+            border: 2px solid #DFE6E9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #6C63FF;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
+        }
+        .form-group .help-text { font-size: 0.8rem; color: #ADB5BD; }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #DFE6E9;
+        }
+        .full-width { grid-column: 1 / -1; }
+        .image-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .image-item {
+            position: relative;
+        }
+        .image-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #DFE6E9;
+        }
+        .image-item .remove-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #FF4757;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .url-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.3rem 0.5rem;
+            background: #F8F6FF;
+            border-radius: 4px;
+            margin-bottom: 0.3rem;
+            font-size: 0.85rem;
+            color: #636E72;
+        }
+        .url-item .remove-url {
+            color: #FF4757;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 0.5rem;
+        }
+        .btn-add-image {
+            padding: 0.7rem 1.5rem;
+            background: #6C63FF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-add-image:hover {
+            background: #5A52D5;
+        }
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <span class="logo-icon">👗</span>
+                <span>StyleStore</span>
+            </a>
+            <nav class="nav-menu">
+                <a href="/"><i class="fas fa-home"></i> Início</a>
+                <a href="/vendedor/dashboard"><i class="fas fa-store"></i> Minha Loja</a>
+                <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <h1 class="form-title">
+            <i class="fas fa-plus-circle" style="color:#6C63FF;"></i>
+            Cadastrar Novo Produto
+        </h1>
+
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <form th:action="@{/vendedor/produtos/salvar}" th:object="${produto}" method="post">
+            <div class="form-grid">
+                <!-- Nome -->
+                <div class="form-group full-width">
+                    <label>Nome do Produto <span class="required">*</span></label>
+                    <input type="text" th:field="*{nome}" placeholder="Ex: Vestido Floral Verão" required>
+                </div>
+
+                <!-- Categoria -->
+                <div class="form-group">
+                    <label>Categoria <span class="required">*</span></label>
+                    <select th:field="*{categoria}" required>
+                        <option value="">Selecione...</option>
+                        <option value="FEMININO">👩 Feminino</option>
+                        <option value="MASCULINO">👨 Masculino</option>
+                        <option value="INFANTIL">👶 Infantil</option>
+                    </select>
+                </div>
+
+                <!-- Tamanho -->
+                <div class="form-group">
+                    <label>Tamanho <span class="required">*</span></label>
+                    <select th:field="*{tamanho}" required>
+                        <option value="">Selecione...</option>
+                        <option value="PP">PP</option>
+                        <option value="P">P</option>
+                        <option value="M">M</option>
+                        <option value="G">G</option>
+                        <option value="GG">GG</option>
+                        <option value="XG">XG</option>
+                    </select>
+                </div>
+
+                <!-- Cor -->
+                <div class="form-group">
+                    <label>Cor <span class="required">*</span></label>
+                    <select th:field="*{cor}" required>
+                        <option value="">Selecione...</option>
+                        <option value="BRANCO">⚪ Branco</option>
+                        <option value="PRETO">⚫ Preto</option>
+                        <option value="AZUL">🔵 Azul</option>
+                        <option value="VERMELHO">🔴 Vermelho</option>
+                        <option value="VERDE">🟢 Verde</option>
+                        <option value="AMARELO">🟡 Amarelo</option>
+                        <option value="ROSA">🩷 Rosa</option>
+                        <option value="ROXO">🟣 Roxo</option>
+                        <option value="BEGE">🟤 Bege</option>
+                        <option value="CINZA">⬜ Cinza</option>
+                    </select>
+                </div>
+
+                <!-- Estoque -->
+                <div class="form-group">
+                    <label>Quantidade em Estoque <span class="required">*</span></label>
+                    <input type="number" th:field="*{quantidadeEstoque}" min="0" placeholder="0" required>
+                </div>
+
+                <!-- Preço -->
+                <div class="form-group">
+                    <label>Preço (R$) <span class="required">*</span></label>
+                    <input type="number" th:field="*{preco}" min="0.01" step="0.01" placeholder="49.90" required>
+                </div>
+
+                <!-- Descrição -->
+                <div class="form-group full-width">
+                    <label>Descrição <span class="required">*</span></label>
+                    <textarea th:field="*{descricao}" rows="3" placeholder="Descreva o produto (material, características, etc.)" required></textarea>
+                </div>
+
+                <!-- URL das Imagens -->
+                <div class="form-group full-width">
+                    <label><i class="fas fa-image"></i> URL das Imagens</label>
+                    <div style="display:flex;gap:0.5rem;">
+                        <input type="url" id="imagemUrl" placeholder="https://exemplo.com/imagem.jpg" style="flex:1;">
+                        <button type="button" class="btn-add-image" onclick="adicionarImagem()">
+                            <i class="fas fa-plus"></i> Adicionar
+                        </button>
+                    </div>
+                    <span class="help-text">
+                        <i class="fas fa-info-circle"></i> 
+                        Cole o link da imagem (máx. 10 imagens). Separe por vírgula se for adicionar várias.
+                    </span>
+                    
+                    <div id="urlList" class="url-list"></div>
+                    <div id="previewContainer" class="image-list"></div>
+                    
+                    <!-- Campo oculto para armazenar as URLs -->
+                    <input type="hidden" id="imagensHidden" name="imagens" value="">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save"></i> Cadastrar Produto
+                </button>
+                <a href="/vendedor/dashboard" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let imagens = [];
+
+        function adicionarImagem() {
+            const input = document.getElementById('imagemUrl');
+            const url = input.value.trim();
+            
+            if (!url) {
+                alert('Por favor, cole uma URL de imagem válida.');
+                return;
+            }
+            
+            try { new URL(url); } catch (e) {
+                alert('URL inválida.');
+                return;
+            }
+            
+            if (imagens.includes(url)) {
+                alert('Esta imagem já foi adicionada.');
+                return;
+            }
+            
+            if (imagens.length >= 10) {
+                alert('Máximo de 10 imagens.');
+                return;
+            }
+            
+            imagens.push(url);
+            input.value = '';
+            atualizarLista();
+        }
+
+        function removerImagem(index) {
+            imagens.splice(index, 1);
+            atualizarLista();
+        }
+
+        function atualizarLista() {
+            const urlList = document.getElementById('urlList');
+            urlList.innerHTML = '';
+            
+            imagens.forEach((url, index) => {
+                const div = document.createElement('div');
+                div.className = 'url-item';
+                div.innerHTML = `
+                    <span>🔗 ${url.substring(0, 50)}${url.length > 50 ? '...' : ''}</span>
+                    <span class="remove-url" onclick="removerImagem(${index})">✕</span>
+                `;
+                urlList.appendChild(div);
+            });
+            
+            const preview = document.getElementById('previewContainer');
+            preview.innerHTML = '';
+            
+            imagens.forEach((url, index) => {
+                const div = document.createElement('div');
+                div.className = 'image-item';
+                div.innerHTML = `
+                    <img src="${url}" alt="Imagem ${index + 1}" onerror="this.style.display='none'">
+                    <button class="remove-btn" onclick="removerImagem(${index})">✕</button>
+                `;
+                preview.appendChild(div);
+            });
+            
+            document.getElementById('imagensHidden').value = imagens.join(',');
+        }
+
+        document.getElementById('imagemUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                adicionarImagem();
+            }
+        });
+    </script>
+</body>
+</html>

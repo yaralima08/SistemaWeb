@@ -1,10 +1,82 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Minha Loja - StyleStore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{vendedor.dashboard.title} + ' - StyleStore'">Minha Loja - StyleStore</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid #6C63FF;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(108,99,255,0.15); }
+        .stat-card .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .stat-card .stat-number { font-size: 2.2rem; font-weight: 700; color: #2D3436; }
+        .stat-card .stat-label { color: #636E72; font-size: 0.9rem; font-weight: 500; }
+        .stat-card.purple { border-left-color: #6C63FF; }
+        .stat-card.purple .stat-icon { color: #6C63FF; }
+        .stat-card.green { border-left-color: #00C9A7; }
+        .stat-card.green .stat-icon { color: #00C9A7; }
+        .stat-card.orange { border-left-color: #FFC107; }
+        .stat-card.orange .stat-icon { color: #FFC107; }
+        .stat-card.pink { border-left-color: #FF6584; }
+        .stat-card.pink .stat-icon { color: #FF6584; }
+        .quick-actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .quick-actions .btn { padding: 0.8rem 1.8rem; border-radius: 12px; font-weight: 600; }
+        .tabs { display: flex; gap: 0.5rem; border-bottom: 2px solid #DFE6E9; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .tabs button { padding: 0.8rem 1.5rem; border: none; background: none; font-weight: 600; color: #636E72; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s ease; font-size: 0.95rem; }
+        .tabs button:hover { color: #6C63FF; }
+        .tabs button.active { color: #6C63FF; border-bottom-color: #6C63FF; }
+        .tabs button i { margin-right: 0.5rem; }
+        .table-container { background: white; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); overflow: hidden; }
+        .table-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid #DFE6E9; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+        .table-header h3 { font-size: 1.1rem; font-weight: 700; color: #2D3436; }
+        .table-header .badge { background: #6C63FF; color: white; padding: 0.2rem 0.8rem; border-radius: 50px; font-size: 0.8rem; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table thead { background: #F8F9FA; }
+        .table th { padding: 0.8rem 1.2rem; text-align: left; font-weight: 600; color: #636E72; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .table td { padding: 0.8rem 1.2rem; border-bottom: 1px solid #F8F9FA; vertical-align: middle; font-size: 0.95rem; }
+        .table tbody tr:hover { background: #F8F6FF; }
+        .status-badge { padding: 0.2rem 0.8rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; }
+        .status-badge.in-stock { background: #D4F5E9; color: #006644; }
+        .status-badge.low-stock { background: #FFF3CD; color: #856404; }
+        .status-badge.out-of-stock { background: #FDD8D8; color: #9B2C2C; }
+        .order-card { background: white; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #F0EDFF; transition: all 0.3s ease; }
+        .order-card:hover { border-color: #6C63FF; box-shadow: 0 4px 12px rgba(108,99,255,0.1); }
+        .order-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .order-id { font-weight: 700; color: #2D3436; }
+        .order-date { color: #636E72; font-size: 0.85rem; }
+        .order-items { display: flex; gap: 1rem; flex-wrap: wrap; margin: 0.5rem 0; }
+        .order-item { background: #F8F6FF; padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.85rem; color: #636E72; }
+        .order-total { font-weight: 700; color: #6C63FF; font-size: 1.1rem; }
+        .order-client { color: #636E72; font-size: 0.85rem; }
+        .empty-state { text-align: center; padding: 4rem 2rem; }
+        .empty-state i { font-size: 4rem; color: #DFE6E9; margin-bottom: 1rem; }
+        .empty-state h3 { color: #636E72; margin-bottom: 0.5rem; }
+        .empty-state p { color: #ADB5BD; }
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .quick-actions { flex-direction: column; }
+            .quick-actions .btn { width: 100%; justify-content: center; }
+            .table-container { overflow-x: auto; }
+        }
+        @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -14,110 +86,234 @@
                 <span>StyleStore</span>
             </a>
             <nav class="nav-menu">
-                <a href="/"><i class="fas fa-home"></i> Início</a>
-                <a href="/produtos"><i class="fas fa-tshirt"></i> Produtos</a>
-                <a href="/vendedor/dashboard" class="active"><i class="fas fa-store"></i> Minha Loja</a>
-                <a href="/logout"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                <a href="/"><i class="fas fa-home"></i> <span th:text="#{menu.home}">Início</span></a>
+                <a href="/produtos"><i class="fas fa-tshirt"></i> <span th:text="#{menu.products}">Produtos</span></a>
+                <a href="/vendedor/dashboard" class="active"><i class="fas fa-store"></i> <span th:text="#{vendedor.dashboard.title}">Minha Loja</span></a>
+                
+                <div style="display:flex;gap:0.3rem;align-items:center;margin-left:0.5rem;">
+                    <a href="?lang=pt_BR" title="Português" style="padding:0.3rem 0.5rem;font-size:1.2rem;text-decoration:none;background:rgba(255,255,255,0.15);border-radius:4px;">
+                        🇧🇷
+                    </a>
+                    <a href="?lang=en" title="English" style="padding:0.3rem 0.5rem;font-size:1.2rem;text-decoration:none;background:rgba(255,255,255,0.15);border-radius:4px;">
+                        🇺🇸
+                    </a>
+                </div>
+                
+                <a href="/logout"><i class="fas fa-sign-out-alt"></i> <span th:text="#{app.logout}">Sair</span></a>
             </nav>
         </div>
     </header>
 
     <main style="max-width:1280px;margin:0 auto;padding:2rem;">
+
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
+        <!-- Cabeçalho da Loja -->
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
             <div>
-                <h1 style="font-size:2rem;"><i class="fas fa-store" style="color:#6C63FF;"></i> <span th:text="${vendedor.nomeLoja}">Minha Loja</span></h1>
-                <p style="color:#636E72;">
+                <h1 style="font-size:2rem;font-weight:800;color:#2D3436;">
+                    <i class="fas fa-store" style="color:#6C63FF;"></i> 
+                    <span th:text="${vendedor.nomeLoja}">Minha Loja</span>
+                </h1>
+                <p style="color:#636E72;font-size:0.95rem;">
                     <i class="fas fa-envelope"></i> <span th:text="${vendedor.email}">email@loja.com</span>
-                    · <i class="fas fa-id-card"></i> CNPJ: <span th:text="${vendedor.cnpj}">00.000.000/0000-00</span>
+                    <span style="margin:0 0.5rem;">|</span>
+                    <i class="fas fa-id-card"></i> CNPJ: <span th:text="${vendedor.cnpj}">00.000.000/0000-00</span>
+                    <span style="margin:0 0.5rem;">|</span>
+                    <span th:if="${vendedor.ativo}" style="color:#00C9A7;">
+                        <i class="fas fa-check-circle"></i> <span th:text="#{cliente.active}">Ativo</span>
+                    </span>
                 </p>
             </div>
-            <a href="/vendedor/produtos/novo" class="btn btn-primary btn-lg">
-                <i class="fas fa-plus-circle"></i> Novo Produto
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                <a href="/vendedor/produtos/novo" class="btn btn-primary">
+                    <i class="fas fa-plus-circle"></i> <span th:text="#{vendedor.dashboard.novo.produto}">Novo Produto</span>
+                </a>
+                <a href="/vendedor/pedidos" class="btn btn-secondary">
+                    <i class="fas fa-shopping-bag"></i> <span th:text="#{vendedor.dashboard.ver.pedidos}">Ver Pedidos</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="stats-grid">
+            <div class="stat-card purple">
+                <div class="stat-icon">👕</div>
+                <div class="stat-number" th:text="${totalProdutos}">0</div>
+                <div class="stat-label"><span th:text="#{vendedor.dashboard.produtos}">Produtos</span></div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon">📦</div>
+                <div class="stat-number" th:text="${totalPedidos}">0</div>
+                <div class="stat-label"><span th:text="#{vendedor.dashboard.pedidos}">Pedidos</span></div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-icon">💰</div>
+                <div class="stat-number" th:text="'R$ ' + ${#numbers.formatDecimal(totalVendas, 0, 2, 'COMMA')}">R$ 0,00</div>
+                <div class="stat-label"><span th:text="#{vendedor.dashboard.vendas}">Total em Vendas</span></div>
+            </div>
+            <div class="stat-card pink">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number" th:text="${totalProdutos > 0 ? '4.8' : '0'}">4.8</div>
+                <div class="stat-label"><span th:text="#{vendedor.dashboard.avaliacao}">Avaliação</span></div>
+            </div>
+        </div>
+
+        <!-- Ações Rápidas -->
+        <div class="quick-actions">
+            <a href="/vendedor/produtos/novo" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> <span th:text="#{vendedor.dashboard.novo.produto}">Adicionar Produto</span>
+            </a>
+            <a href="/vendedor/pedidos" class="btn btn-outline">
+                <i class="fas fa-shopping-bag"></i> <span th:text="#{vendedor.dashboard.ver.pedidos}">Ver Pedidos</span>
+            </a>
+            <a href="/produtos" class="btn btn-outline">
+                <i class="fas fa-eye"></i> <span th:text="#{vendedor.dashboard.visualizar.loja}">Visualizar Loja</span>
+            </a>
+            <a href="/vendedor/produtos" class="btn btn-outline">
+                <i class="fas fa-list"></i> <span th:text="#{vendedor.dashboard.gerenciar.produtos}">Gerenciar Produtos</span>
             </a>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:2rem;">
-            <div style="background:white;padding:1.5rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);text-align:center;">
-                <i class="fas fa-tshirt" style="font-size:2rem;color:#6C63FF;"></i>
-                <h3 style="font-size:2rem;margin:0.5rem 0;" th:text="${produtos != null ? produtos.size() : 0}">0</h3>
-                <p style="color:#636E72;">Produtos</p>
-            </div>
-            <div style="background:white;padding:1.5rem;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);text-align:center;">
-                <i class="fas fa-shopping-bag" style="font-size:2rem;color:#00C9A7;"></i>
-                <h3 style="font-size:2rem;margin:0.5rem 0;">0</h3>
-                <p style="color:#636E72;">Pedidos</p>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="active" onclick="showTab('produtos')">
+                <i class="fas fa-tshirt"></i> <span th:text="#{vendedor.dashboard.meus.produtos}">Meus Produtos</span>
+            </button>
+            <button onclick="showTab('pedidos')">
+                <i class="fas fa-shopping-bag"></i> <span th:text="#{vendedor.dashboard.ultimos.pedidos}">Últimos Pedidos</span>
+            </button>
+        </div>
+
+        <!-- Tab Produtos -->
+        <div id="tab-produtos" class="tab-content">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-list" style="color:#6C63FF;"></i> <span th:text="#{vendedor.dashboard.meus.produtos}">Meus Produtos</span></h3>
+                    <span class="badge" th:text="${totalProdutos} + ' ' + #{produto.title}">0 produtos</span>
+                </div>
+
+                <div th:if="${produtos == null || produtos.isEmpty()}">
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3 th:text="#{vendedor.dashboard.sem.produtos}">Nenhum produto cadastrado</h3>
+                        <p><span th:text="#{produto.empty.hint}">Comece a vender cadastrando seu primeiro produto!</span></p>
+                        <a href="/vendedor/produtos/novo" class="btn btn-primary" style="margin-top:1rem;">
+                            <i class="fas fa-plus-circle"></i> <span th:text="#{vendedor.dashboard.novo.produto}">Cadastrar Produto</span>
+                        </a>
+                    </div>
+                </div>
+
+                <table class="table" th:unless="${produtos == null || produtos.isEmpty()}">
+                    <thead>
+                        <tr>
+                            <th><span th:text="#{produto.name}">Produto</span></th>
+                            <th><span th:text="#{produto.category}">Categoria</span></th>
+                            <th><span th:text="#{produto.price}">Preço</span></th>
+                            <th><span th:text="#{produto.stock}">Estoque</span></th>
+                            <th><span th:text="#{status.title}">Status</span></th>
+                            <th><span th:text="#{action.title}">Ações</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="produto : ${produtos}">
+                            <td>
+                                <div style="display:flex;align-items:center;gap:0.8rem;">
+                                    <img th:if="${produto.imagens != null && !produto.imagens.isEmpty()}" 
+                                         th:src="${produto.imagens[0]}" 
+                                         style="width:45px;height:45px;object-fit:cover;border-radius:8px;border:1px solid #DFE6E9;">
+                                    <div>
+                                        <strong th:text="${produto.nome}">Nome</strong>
+                                        <div style="font-size:0.8rem;color:#636E72;">
+                                            <span th:text="${produto.tamanho}">M</span> · 
+                                            <span th:text="${produto.cor}">Cor</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span style="background:#F8F6FF;padding:0.2rem 0.8rem;border-radius:50px;font-size:0.8rem;" th:text="${produto.categoria}">Categoria</span></td>
+                            <td style="font-weight:700;color:#6C63FF;" th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 0, 2, 'COMMA')}">R$ 0,00</td>
+                            <td th:text="${produto.quantidadeEstoque}">10</td>
+                            <td>
+                                <span class="status-badge in-stock" th:if="${produto.quantidadeEstoque > 10}">
+                                    <i class="fas fa-check-circle"></i> <span th:text="#{produto.instock}">Em estoque</span>
+                                </span>
+                                <span class="status-badge low-stock" th:if="${produto.quantidadeEstoque <= 10 && produto.quantidadeEstoque > 0}">
+                                    <i class="fas fa-exclamation-triangle"></i> <span th:text="#{produto.lowstock}">Estoque baixo</span>
+                                </span>
+                                <span class="status-badge out-of-stock" th:if="${produto.quantidadeEstoque == 0}">
+                                    <i class="fas fa-times-circle"></i> <span th:text="#{produto.outofstock}">Esgotado</span>
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display:flex;gap:0.5rem;">
+                                    <a th:href="@{'/vendedor/produtos/editar/' + ${produto.id}}" class="btn btn-primary btn-sm" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form th:action="@{'/vendedor/produtos/deletar/' + ${produto.id}}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este produto?')" title="Excluir">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div style="background:white;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);overflow:hidden;">
-            <div style="padding:1.5rem;border-bottom:1px solid #DFE6E9;">
-                <h2><i class="fas fa-list"></i> Meus Produtos</h2>
+        <!-- Tab Pedidos -->
+        <div id="tab-pedidos" class="tab-content" style="display:none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+                <h3 style="font-size:1.1rem;"><i class="fas fa-shopping-bag" style="color:#6C63FF;"></i> <span th:text="#{vendedor.dashboard.ultimos.pedidos}">Pedidos Recebidos</span></h3>
+                <a href="/vendedor/pedidos" class="btn btn-primary btn-sm"><span th:text="#{vendedor.dashboard.ver.pedidos}">Ver Todos</span></a>
             </div>
 
-            <div th:if="${produtos == null || produtos.isEmpty()}" style="padding:3rem;text-align:center;">
-                <i class="fas fa-box-open" style="font-size:4rem;color:#DFE6E9;"></i>
-                <h3 style="margin-top:1rem;color:#636E72;">Nenhum produto cadastrado</h3>
-                <a href="/vendedor/produtos/novo" class="btn btn-primary" style="margin-top:1rem;">
-                    <i class="fas fa-plus-circle"></i> Cadastrar Produto
-                </a>
+            <div th:if="${pedidos == null || pedidos.isEmpty()}">
+                <div class="empty-state" style="background:white;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+                    <i class="fas fa-box-open"></i>
+                    <h3 th:text="#{vendedor.dashboard.sem.pedidos}">Nenhum pedido recebido</h3>
+                    <p><span th:text="#{pedido.empty.hint}">Quando um cliente comprar seus produtos, aparecerá aqui.</span></p>
+                </div>
             </div>
 
-            <table class="table" th:if="${produtos != null && !produtos.isEmpty()}">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Produto</th>
-                        <th>Categoria</th>
-                        <th>Preço</th>
-                        <th>Estoque</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="produto : ${produtos}">
-                        <td th:text="${produto.id}">1</td>
-                        <td>
-                            <div style="display:flex;align-items:center;gap:1rem;">
-                                <img th:if="${produto.imagens != null && !produto.imagens.isEmpty()}" 
-                                     th:src="${produto.imagens[0]}" 
-                                     style="width:50px;height:50px;object-fit:cover;border-radius:8px;">
-                                <strong th:text="${produto.nome}">Nome</strong>
-                            </div>
-                        </td>
-                        <td th:text="${produto.categoria}">Categoria</td>
-                        <td style="font-weight:bold;color:#6C63FF;" th:text="'R$ ' + ${#numbers.formatDecimal(produto.preco, 0, 2, 'COMMA')}">
-                            R$ 0,00
-                        </td>
-                        <td>
-                            <span th:if="${produto.quantidadeEstoque > 10}" style="color:#00C9A7;">
-                                <i class="fas fa-check-circle"></i> <span th:text="${produto.quantidadeEstoque}">10</span>
+            <div th:unless="${pedidos == null || pedidos.isEmpty()}">
+                <div th:each="pedido : ${pedidos}" class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <span class="order-id"><span th:text="#{pedido.title}">Pedido</span> #<span th:text="${pedido.id}">1</span></span>
+                            <span class="order-date" style="margin-left:1rem;">
+                                <i class="fas fa-calendar"></i> 
+                                <span th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}">01/07/2026</span>
                             </span>
-                            <span th:if="${produto.quantidadeEstoque <= 10 && produto.quantidadeEstoque > 0}" style="color:#FFC107;">
-                                <i class="fas fa-exclamation-triangle"></i> <span th:text="${produto.quantidadeEstoque}">5</span>
+                        </div>
+                        <div>
+                            <span class="order-total" th:text="'R$ ' + ${#numbers.formatDecimal(pedido.total, 0, 2, 'COMMA')}">R$ 0,00</span>
+                            <span th:if="${pedido.status == 'PENDENTE'}" style="background:#FFC107;color:#2D3436;padding:0.2rem 0.8rem;border-radius:50px;font-size:0.75rem;font-weight:600;margin-left:0.5rem;">
+                                <i class="fas fa-clock"></i> <span th:text="#{status.pendente}">Pendente</span>
                             </span>
-                            <span th:if="${produto.quantidadeEstoque == 0}" style="color:#FF4757;">
-                                <i class="fas fa-times-circle"></i> Esgotado
+                            <span th:if="${pedido.status == 'PAGO'}" style="background:#6C63FF;color:white;padding:0.2rem 0.8rem;border-radius:50px;font-size:0.75rem;font-weight:600;margin-left:0.5rem;">
+                                <i class="fas fa-check"></i> <span th:text="#{status.pago}">Pago</span>
                             </span>
-                        </td>
-                        <td>
-                            <div style="display:flex;gap:0.5rem;">
-                                <a th:href="@{'/vendedor/produtos/editar/' + ${produto.id}}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form th:action="@{'/vendedor/produtos/deletar/' + ${produto.id}}" method="post" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir?')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                            <span th:if="${pedido.status == 'ENVIADO'}" style="background:#00C9A7;color:white;padding:0.2rem 0.8rem;border-radius:50px;font-size:0.75rem;font-weight:600;margin-left:0.5rem;">
+                                <i class="fas fa-truck"></i> <span th:text="#{status.enviado}">Enviado</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="order-client">
+                        <i class="fas fa-user"></i> <span th:text="#{cliente.name}">Cliente</span>: <span th:text="${pedido.cliente.nome}">Cliente</span>
+                    </div>
+                    <div class="order-items">
+                        <span class="order-item" th:each="item : ${pedido.itens}">
+                            <span th:text="${item.produto.nome}">Produto</span> × <span th:text="${item.quantidade}">1</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
         </div>
+
     </main>
 
     <footer class="footer">
@@ -127,10 +323,31 @@
                 <p>UFScar - Departamento de Computação</p>
                 <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);">Yara Vieira de Lima - RA: 824341</p>
             </div>
+            <div>
+                <h4><span th:text="#{menu.products}">Produtos</span></h4>
+                <a href="/produtos"><span th:text="#{menu.products}">Produtos</span></a>
+                <a href="/vendedor/dashboard"><span th:text="#{vendedor.dashboard.title}">Minha Loja</span></a>
+            </div>
+            <div>
+                <h4>Idioma</h4>
+                <a href="?lang=pt_BR">🇧🇷 Português</a>
+                <a href="?lang=en">🇺🇸 English</a>
+            </div>
         </div>
         <div class="footer-bottom">
             <p>&copy; 2026 StyleStore - Todos os direitos reservados.</p>
         </div>
     </footer>
+
+    <script>
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.tabs button').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).style.display = 'block';
+            document.querySelectorAll('.tabs button').forEach(el => {
+                if (el.textContent.toLowerCase().includes(tab)) el.classList.add('active');
+            });
+        }
+    </script>
 </body>
 </html>

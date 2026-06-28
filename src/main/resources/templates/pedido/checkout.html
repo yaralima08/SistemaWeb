@@ -11,43 +11,51 @@
             margin: 2rem auto;
             padding: 2rem;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
         .product-summary {
             display: flex;
             gap: 2rem;
-            padding: 1rem;
+            padding: 1.5rem;
             background: #F8F6FF;
             border-radius: 12px;
             margin-bottom: 2rem;
             align-items: center;
+            border: 1px solid #F0EDFF;
         }
         .product-summary img {
             width: 120px;
             height: 120px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 12px;
+            border: 2px solid #DFE6E9;
         }
-        .product-summary .info {
-            flex: 1;
-        }
-        .product-summary .info h3 { margin-bottom: 0.5rem; }
-        .product-summary .price { font-size: 1.5rem; font-weight: 700; color: #6C63FF; }
+        .product-summary .info { flex: 1; }
+        .product-summary .info h3 { font-size: 1.2rem; margin-bottom: 0.3rem; }
+        .product-summary .info .category { color: #636E72; font-size: 0.9rem; }
+        .product-summary .price { font-size: 1.8rem; font-weight: 700; color: #6C63FF; }
+        .product-summary .stock { color: #636E72; font-size: 0.9rem; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
         .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
         .form-group label { font-weight: 600; font-size: 0.9rem; color: #2D3436; }
+        .form-group label .required { color: #FF4757; }
         .form-group input, .form-group select {
             padding: 0.7rem 1rem;
             border: 2px solid #DFE6E9;
             border-radius: 8px;
             font-size: 1rem;
             transition: all 0.3s ease;
+            background: #F8F9FA;
         }
         .form-group input:focus, .form-group select:focus {
             border-color: #6C63FF;
             outline: none;
             box-shadow: 0 0 0 3px rgba(108,99,255,0.1);
+        }
+        .form-group input:disabled {
+            background: #F0EDFF;
+            color: #636E72;
         }
         .full-width { grid-column: 1 / -1; }
         .form-actions {
@@ -59,7 +67,7 @@
         }
         .btn-checkout {
             flex: 1;
-            padding: 0.8rem;
+            padding: 1rem;
             background: #6C63FF;
             color: white;
             border: none;
@@ -74,6 +82,15 @@
             background: #5A52D5;
             transform: translateY(-2px);
         }
+        .btn-checkout:disabled {
+            background: #ADB5BD;
+            cursor: not-allowed;
+        }
+        .alert { padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
+        .alert-error { background: #FDD8D8; color: #9B2C2C; border-left: 4px solid #FF4757; }
+        .alert-success { background: #D4F5E9; color: #006644; border-left: 4px solid #00C9A7; }
+        .quantity-selector { display: flex; align-items: center; gap: 1rem; }
+        .quantity-selector input { width: 80px; text-align: center; padding: 0.5rem; border: 2px solid #DFE6E9; border-radius: 8px; font-size: 1rem; }
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
             .product-summary { flex-direction: column; text-align: center; }
@@ -97,7 +114,10 @@
     </header>
 
     <div class="checkout-container">
-        <h1 style="margin-bottom:2rem;"><i class="fas fa-shopping-cart" style="color:#6C63FF;"></i> Finalizar Compra</h1>
+        <h1 style="margin-bottom:1.5rem;">
+            <i class="fas fa-shopping-cart" style="color:#6C63FF;"></i> 
+            Finalizar Compra
+        </h1>
 
         <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
@@ -106,75 +126,93 @@
             <img th:if="${produto.imagens != null && !produto.imagens.isEmpty()}" 
                  th:src="${produto.imagens[0]}" 
                  th:alt="${produto.nome}">
+            <img th:unless="${produto.imagens != null && !produto.imagens.isEmpty()}" 
+                 src="/images/placeholder.jpg" 
+                 th:alt="${produto.nome}">
             <div class="info">
                 <h3 th:text="${produto.nome}">Produto</h3>
-                <p style="color:#636E72;"><span th:text="${produto.categoria}">Categoria</span> · <span th:text="${produto.tamanho}">M</span> · <span th:text="${produto.cor}">Cor</span></p>
+                <div class="category">
+                    <i class="fas fa-tag"></i> <span th:text="${produto.categoria}">Categoria</span>
+                    · <i class="fas fa-ruler"></i> <span th:text="${produto.tamanho}">M</span>
+                    · <i class="fas fa-palette"></i> <span th:text="${produto.cor}">Cor</span>
+                </div>
                 <div class="price">R$ <span th:text="${#numbers.formatDecimal(produto.preco, 0, 2, 'COMMA')}">0,00</span></div>
-                <p style="color:#636E72;font-size:0.9rem;"><i class="fas fa-box"></i> Estoque: <span th:text="${produto.quantidadeEstoque}">0</span> unidades</p>
+                <div class="stock">
+                    <i class="fas fa-box"></i> Estoque: <span th:text="${produto.quantidadeEstoque}">0</span> unidades
+                </div>
             </div>
-            <div style="text-align:center;">
-                <label style="font-weight:600;">Quantidade</label>
-                <input type="number" id="quantidade" name="quantidade" value="1" min="1" max="10" 
-                       style="width:80px;padding:0.5rem;border:2px solid #DFE6E9;border-radius:8px;text-align:center;">
+            <div class="quantity-selector">
+                <label style="font-weight:600;">Quantidade:</label>
+                <input type="number" id="quantidade" name="quantidade" value="1" min="1" 
+                       th:max="${produto.quantidadeEstoque}" step="1">
             </div>
         </div>
 
         <!-- Formulário de Endereço -->
-        <form th:action="@{/comprar/finalizar}" method="post">
+        <form id="checkoutForm" th:action="@{/comprar/finalizar}" method="post">
             <input type="hidden" name="produtoId" th:value="${produto.id}">
             <input type="hidden" name="quantidade" id="quantidadeHidden" value="1">
 
-            <h3 style="margin-bottom:1rem;"><i class="fas fa-map-marker-alt" style="color:#6C63FF;"></i> Endereço de Entrega</h3>
+            <h3 style="margin-bottom:1rem;">
+                <i class="fas fa-map-marker-alt" style="color:#6C63FF;"></i> 
+                Endereço de Entrega
+            </h3>
 
             <div class="form-grid">
                 <div class="form-group full-width">
                     <label>Logradouro <span class="required">*</span></label>
-                    <input type="text" name="logradouro" placeholder="Rua, Av..." required>
+                    <input type="text" name="logradouro" th:value="${endereco.logradouro}" 
+                           placeholder="Rua, Av..." required>
                 </div>
                 <div class="form-group">
                     <label>Número <span class="required">*</span></label>
-                    <input type="text" name="numero" placeholder="123" required>
+                    <input type="text" name="numero" th:value="${endereco.numero}" 
+                           placeholder="123" required>
                 </div>
                 <div class="form-group">
                     <label>Complemento</label>
-                    <input type="text" name="complemento" placeholder="Apto, Bloco...">
+                    <input type="text" name="complemento" th:value="${endereco.complemento}" 
+                           placeholder="Apto, Bloco...">
                 </div>
                 <div class="form-group">
                     <label>Bairro <span class="required">*</span></label>
-                    <input type="text" name="bairro" placeholder="Bairro" required>
+                    <input type="text" name="bairro" th:value="${endereco.bairro}" 
+                           placeholder="Bairro" required>
                 </div>
                 <div class="form-group">
                     <label>Cidade <span class="required">*</span></label>
-                    <input type="text" name="cidade" placeholder="Cidade" required>
+                    <input type="text" name="cidade" th:value="${endereco.cidade}" 
+                           placeholder="Cidade" required>
                 </div>
                 <div class="form-group">
                     <label>Estado <span class="required">*</span></label>
                     <select name="estado" required>
                         <option value="">Selecione...</option>
-                        <option value="SP">São Paulo</option>
-                        <option value="RJ">Rio de Janeiro</option>
-                        <option value="MG">Minas Gerais</option>
-                        <option value="PR">Paraná</option>
-                        <option value="SC">Santa Catarina</option>
-                        <option value="RS">Rio Grande do Sul</option>
-                        <option value="BA">Bahia</option>
-                        <option value="CE">Ceará</option>
-                        <option value="PE">Pernambuco</option>
-                        <option value="GO">Goiás</option>
-                        <option value="DF">Distrito Federal</option>
+                        <option value="SP" th:selected="${endereco.estado == 'SP'}">São Paulo</option>
+                        <option value="RJ" th:selected="${endereco.estado == 'RJ'}">Rio de Janeiro</option>
+                        <option value="MG" th:selected="${endereco.estado == 'MG'}">Minas Gerais</option>
+                        <option value="PR" th:selected="${endereco.estado == 'PR'}">Paraná</option>
+                        <option value="SC" th:selected="${endereco.estado == 'SC'}">Santa Catarina</option>
+                        <option value="RS" th:selected="${endereco.estado == 'RS'}">Rio Grande do Sul</option>
+                        <option value="BA" th:selected="${endereco.estado == 'BA'}">Bahia</option>
+                        <option value="CE" th:selected="${endereco.estado == 'CE'}">Ceará</option>
+                        <option value="PE" th:selected="${endereco.estado == 'PE'}">Pernambuco</option>
+                        <option value="GO" th:selected="${endereco.estado == 'GO'}">Goiás</option>
+                        <option value="DF" th:selected="${endereco.estado == 'DF'}">Distrito Federal</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>CEP <span class="required">*</span></label>
-                    <input type="text" name="cep" placeholder="00000-000" required>
+                    <input type="text" name="cep" th:value="${endereco.cep}" 
+                           placeholder="00000-000" required>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn-checkout">
+                <button type="submit" class="btn-checkout" id="btnFinalizar">
                     <i class="fas fa-check-circle"></i> Confirmar Compra
                 </button>
-                <a href="/produtos" class="btn btn-outline">
+                <a href="/produtos" class="btn btn-outline" style="padding:1rem 2rem;border-radius:12px;text-decoration:none;display:flex;align-items:center;gap:0.5rem;">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </a>
             </div>
@@ -186,10 +224,31 @@
         document.addEventListener('DOMContentLoaded', function() {
             const qtdInput = document.getElementById('quantidade');
             const qtdHidden = document.getElementById('quantidadeHidden');
+            const btnFinalizar = document.getElementById('btnFinalizar');
             
-            qtdInput.addEventListener('change', function() {
-                qtdHidden.value = this.value;
-            });
+            if (qtdInput && qtdHidden) {
+                qtdInput.addEventListener('change', function() {
+                    const valor = parseInt(this.value);
+                    if (valor < 1) {
+                        this.value = 1;
+                        qtdHidden.value = 1;
+                    } else {
+                        qtdHidden.value = this.value;
+                    }
+                });
+            }
+
+            // Validar estoque
+            const maxEstoque = parseInt(qtdInput.getAttribute('max'));
+            if (qtdInput && maxEstoque) {
+                qtdInput.addEventListener('change', function() {
+                    if (parseInt(this.value) > maxEstoque) {
+                        this.value = maxEstoque;
+                        qtdHidden.value = maxEstoque;
+                        alert('Estoque disponível: ' + maxEstoque + ' unidades');
+                    }
+                });
+            }
         });
     </script>
 </body>

@@ -1,4 +1,4 @@
-package br.ufscar.dc.compraevenda.api;
+package br.ufscar.dc.compraevenda.controller.api;
 
 import br.ufscar.dc.compraevenda.model.Produto;
 import br.ufscar.dc.compraevenda.service.ProdutoService;
@@ -16,11 +16,14 @@ public class ProdutoRestController {
 
     private final ProdutoService produtoService;
 
+    // ===== LISTAR TODOS OS PRODUTOS (PÚBLICO) =====
     @GetMapping
     public ResponseEntity<List<Produto>> listarTodos() {
-        return ResponseEntity.ok(produtoService.listarTodos());
+        List<Produto> produtos = produtoService.listarTodos();
+        return ResponseEntity.ok(produtos);
     }
 
+    // ===== BUSCAR PRODUTO POR ID (PÚBLICO) =====
     @GetMapping("/{id}")
     public ResponseEntity<Produto> buscarPorId(@PathVariable Long id) {
         return produtoService.buscarPorId(id)
@@ -28,6 +31,7 @@ public class ProdutoRestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // ===== FILTRAR PRODUTOS (PÚBLICO) =====
     @GetMapping("/filtrar")
     public ResponseEntity<List<Produto>> filtrar(
             @RequestParam(required = false) String categoria,

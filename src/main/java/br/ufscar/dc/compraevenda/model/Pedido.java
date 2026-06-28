@@ -1,7 +1,7 @@
 package br.ufscar.dc.compraevenda.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -17,21 +17,17 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Pedido {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull
     private LocalDateTime dataPedido = LocalDateTime.now();
-    
     private String status = "PENDENTE";
-    
-    @NotNull
     private BigDecimal total;
     
     @ManyToOne
     @JoinColumn(name = "cliente_id")
+    @JsonIgnore  // ← ADICIONADO PARA EVITAR RECURSÃO
     private Cliente cliente;
     
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -39,6 +35,7 @@ public class Pedido {
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "endereco_entrega_id")
+    @JsonIgnore  // ← ADICIONADO PARA EVITAR RECURSÃO
     private Endereco enderecoEntrega;
     
     public void addItem(ItemPedido item) {
